@@ -13,6 +13,7 @@ var PostingSchema = new Schema(
 
 		postingText: {type: String, required: true},
 		postingUrl: {type: String, required: true, max: 100},
+		postingDate: {type: Date, required: true},
 
 		companyRating: {type: Number, min: 0, max: 5},
 		companySize: {type: Number, min: 0},
