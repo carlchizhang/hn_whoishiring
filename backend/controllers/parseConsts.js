@@ -1,0 +1,2 @@
+exports.lineBracketsRegex = /((\||^).+?(\||<p>|:|;|,|\bis\b))/gi;
+exports.jobTitleFilters = [/engineers?\b/i, /developers?\b/i, /scientists?\b/i, /interns?\b/i, /administrators?\b/i, /managers?\b/i, /leads?\b/i, /devops\b/i];

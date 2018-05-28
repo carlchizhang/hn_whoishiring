@@ -10,4 +10,7 @@ router.get('/', apiController.hello);
 /* GET list of postings. */
 router.get('/postings', apiController.postingList);
 
+/* GET list of postings. */
+router.get('/refresh', apiController.fetchNewPostings);
+
 module.exports = router;

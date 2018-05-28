@@ -1,0 +1,10 @@
+extends layout
+
+block content
+	ul
+	each item in results
+		li
+			a(href=item.url) #{item.url}
+			p #{item.rawText}
+			ul
+			p #{item.company}
