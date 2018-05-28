@@ -124,5 +124,6 @@ function cleanupExtractionContent(string) {
 	cleanedMatch = cleanedMatch.replace(/,/gi, '');
 	cleanedMatch = cleanedMatch.replace(/;/gi, '');
 	cleanedMatch = cleanedMatch.replace(/\bis\b/gi, '');
+	cleanedMatch = cleanedMatch.replace(/</gi, '');
 	return entities.decode(cleanedMatch.trim());
 }
