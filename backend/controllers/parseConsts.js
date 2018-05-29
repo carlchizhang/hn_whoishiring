@@ -1,4 +1,5 @@
-exports.lineBracketsRegex = /((\||^).+?(\||<p>|:|;|,|\bis\b|<))/gi;
+exports.companyRegex = /((\||^).+?(\||<p>|:|;|,|\bis\b|<|\(| - ))/gi;
+exports.firstLineRegex = /(^).*?(<p>)/g;
 exports.jobTitleFilters = [/engineers?\b/i, /developers?\b/i, /scientists?\b/i, /interns?\b/i, /administrators?\b/i, /managers?\b/i, /leads?\b/i, /devops\b/i];
 
 exports.jobPositions = {
@@ -7,7 +8,7 @@ exports.jobPositions = {
 		regexes: [/\bintern(s|ship)?\b/i]
 	},
 	engineering: {
-		tag: 'engineering/development',
+		tag: 'engineering',
 		regexes: [/\bengineer(s|ing)?\b/i, /\bdevelopers?\b/i, /\bsoftware\b/i]
 	},
 	research: {
@@ -15,8 +16,8 @@ exports.jobPositions = {
 		regexes: [/\bscientists?\b/i, /\bresearch\b/i]
 	},
 	data: {
-		tag: 'data',
-		regexes: [/\b(data).{0,9}(engineers?|engineering|science|scientists?)\b/i]
+		tag: 'data science',
+		regexes: [/\b(data).{0,9}(analysts?|engineers?|engineering|science|scientists?)\b/i]
 	},
 	ai: {
 		tag: 'AI/ML',
@@ -32,7 +33,7 @@ exports.jobPositions = {
 	},
 	sales: {
 		tag: 'sales',
-		regexes: [/\bsales\b/i, /\bmarketing\b/i, /\b(technical).{0,9}(sales)\b/i]
+		regexes: [/\bmarketing\b/i, /\b(technical).{0,9}(sales)\b/i]
 	},
 	operations: {
 		tag: 'operations',

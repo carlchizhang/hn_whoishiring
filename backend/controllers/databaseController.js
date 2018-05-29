@@ -36,6 +36,9 @@ exports.refreshPostingsFromHN = function(numMonths) {
 			}
 		});
 		//whoishiringThreads.forEach(element => debug(element));
+
+		//test array
+		testingComments = [16969474];
 		commentUrls = whoishiringComments.map(id => HN_API_ADDRESS + 'item/' + id + '.json');
 		//debug(commentUrls);
 		debug('Total top level comments: ' + commentUrls.length);
@@ -68,52 +71,64 @@ exports.refreshPostingsFromHN = function(numMonths) {
 
  function parseStoreRawText(commentUrl, rawText) {
 	return ( new Promise(function(resolve, reject) {
-		let plainText = unicodeToChar(rawText.trim());
-		debug('Parsing comment: ' + commentUrl);
-		debug('Raw Text: ' + plainText);
+		let plainText = entities.decode(rawText.trim()).replace(/\r?\n|\r/g, ' ');
+		debug('Parsing comment: ' + plainText);
 
-		//extract all data between square brackets
-		let regexExpression = new RegExp(parseConsts.lineBracketsRegex);
-		let match = regexExpression.exec(plainText);
-		// while ((match = regexExpression.exec(plainText)) != null ) { 
-		// 	if(match.index === regexExpression.lastIndex) {
-		// 		regexExpression.lastIndex++;
-		// 	}
-		// 	debug(cleanupExtractionContent(match[1]));
-		// 	extractionResults.push(cleanupExtractionContent(match[1]));
-		// }
+		let firstLineRegex = new RegExp(parseConsts.firstLineRegex);
+		let firstLine = plainText;
+		let match;
+		if((match = firstLineRegex.exec(plainText)) != null) {
+			firstLine = match[0].replace(/<p>/gi, '').trim();
+		}
+		debug(match);
+		debug('First Line: ' + firstLine);
+
+		//extract all data between square brackets to find company name
+		let regexExpression = new RegExp(parseConsts.companyRegex);
+		let companyResults = [];
+		while ((match = regexExpression.exec(firstLine)) != null ) { 
+			if(match.index === regexExpression.lastIndex) {
+				regexExpression.lastIndex++;
+			}
+			//debug(cleanupExtractionContent(match[1]));
+			companyResults.push(cleanupExtractionContent(match[1]));
+		}
 		let company = '!error parsing company name';
-		if(match != null) {
-			company = cleanupExtractionContent(match[1]);
-			let matchedJobTitle = false;
-			let filterJobTitles = parseConsts.jobTitleFilters;
-			filterJobTitles.forEach((title) => {
-				if(company.search(new RegExp(title)) != -1) {
-					matchedJobTitle = true;
-					debug('Not a company: ' + company + title);
+		for(let i = 0; i < companyResults.length; ++i){
+			let validCompanyName = true;
+			let filters = parseConsts.jobTitleFilters;
+			filters.forEach((job) => {
+				if(companyResults[i].search(new RegExp(job)) != -1) {
+					validCompanyName = false;
 				}
 			});
-			if (matchedJobTitle === true) {
-				company = '!unable to parse company name';
+			if(validCompanyName) {
+				company = companyResults[i];
+				break;
+			}
+		};
+		debug('Company: ' + company);
+
+		//extract all job position tags
+		let tags = [];
+		for(let key in parseConsts.jobPositions) {
+			let tagObj = parseConsts.jobPositions[key];
+			for(let i = 0; i < tagObj.regexes.length; ++i) {
+				if((new RegExp(tagObj.regexes[i])).test(plainText)) {
+					tags.push(tagObj.tag);
+					break;
+				}
 			}
 		}
-		debug('Results: ' + company);
+		debug('Job tags:' + tags);
 
-		resolve({url: commentUrl, rawText: plainText, company: company});
+		resolve({url: commentUrl, rawText: plainText, firstLine: firstLine, company: company, tags: tags});
 	}));
 }
 
 //return a list of postings stored in the database
 exports.getPostingList = function(callback) {
 	Posting.find().exec(callback);
-}
-
-//utilities
-function unicodeToChar(text) {
-   return text.replace(/\\u[\dA-F]{4}/gi, 
-      function (match) {
-           return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
-      });
 }
 
 function cleanupExtractionContent(string) {
@@ -125,5 +140,7 @@ function cleanupExtractionContent(string) {
 	cleanedMatch = cleanedMatch.replace(/;/gi, '');
 	cleanedMatch = cleanedMatch.replace(/\bis\b/gi, '');
 	cleanedMatch = cleanedMatch.replace(/</gi, '');
-	return entities.decode(cleanedMatch.trim());
+	cleanedMatch = cleanedMatch.replace(/\(/gi, '');
+	cleanedMatch = cleanedMatch.replace(/ - /gi, '');
+	return cleanedMatch.trim();
 }

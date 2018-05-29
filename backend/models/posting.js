@@ -12,10 +12,10 @@ var PostingSchema = new Schema(
 
 		company: {type: String, maxlength: 100},
 		location: {type: String, maxlength: 100},
-		costOfLivingIndex: {type: Number, min: 0},
-		position: [String],
+		positionTags: [String],
+		languageTags: [String],
 		salary: {type: String, max: 100},
-		tags: [String],
+		costOfLivingIndex: {type: Number, min: 0},
 
 		//not implemented yet
 		// companyRating: {type: Number, min: 0, max: 5},
