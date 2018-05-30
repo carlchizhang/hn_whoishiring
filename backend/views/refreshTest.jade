@@ -10,8 +10,18 @@ block content
 			p #{item.firstLine}
 			ul
 			p #{item.company}
-			each tag in item.tags
+			each tag in item.jobTags
 				span #{tag}, 
+			br
+			br
+			br
+			each city in item.cities
+				span #{city}, 
+			br
+			br
+			br
+			each tag in item.remoteTags
+				span #{tag},
 			br
 			br
 			br

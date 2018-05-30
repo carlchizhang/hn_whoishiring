@@ -7,6 +7,7 @@ var debug = require('debug')('backend:databaseController');
 var parseConsts = require('./parseConsts');
 var Entities = require('html-entities').AllHtmlEntities;
 var entities = new Entities();
+var allCities = require('all-the-cities');
 
 const HN_API_ADDRESS = process.env.HN_API_URI || 'https://hacker-news.firebaseio.com/v0/';
 
@@ -38,7 +39,7 @@ exports.refreshPostingsFromHN = function(numMonths) {
 		//whoishiringThreads.forEach(element => debug(element));
 
 		//test array
-		testingComments = [16969474];
+		testingComments = [16988868];
 		commentUrls = whoishiringComments.map(id => HN_API_ADDRESS + 'item/' + id + '.json');
 		//debug(commentUrls);
 		debug('Total top level comments: ' + commentUrls.length);
@@ -59,9 +60,6 @@ exports.refreshPostingsFromHN = function(numMonths) {
 			else {
 				debug(i);
 				debug('NULLLLLLLLLLLLLLLLLLL');
-				debug('NULLLLLLLLLLLLLLLLLLL');
-				debug('NULLLLLLLLLLLLLLLLLLL');
-				debug('NULLLLLLLLLLLLLLLLLLL');
 			}
 		});
 		return Promise.all(parseStorePromises);
@@ -80,7 +78,7 @@ exports.refreshPostingsFromHN = function(numMonths) {
 		if((match = firstLineRegex.exec(plainText)) != null) {
 			firstLine = match[0].replace(/<p>/gi, '').trim();
 		}
-		debug(match);
+		//debug(match);
 		debug('First Line: ' + firstLine);
 
 		//extract all data between square brackets to find company name
@@ -90,7 +88,7 @@ exports.refreshPostingsFromHN = function(numMonths) {
 			if(match.index === regexExpression.lastIndex) {
 				regexExpression.lastIndex++;
 			}
-			//debug(cleanupExtractionContent(match[1]));
+			//debug('Matched: ' + cleanupExtractionContent(match[1]));
 			companyResults.push(cleanupExtractionContent(match[1]));
 		}
 		let company = '!error parsing company name';
@@ -110,19 +108,78 @@ exports.refreshPostingsFromHN = function(numMonths) {
 		debug('Company: ' + company);
 
 		//extract all job position tags
-		let tags = [];
+		let jobTags = [];
 		for(let key in parseConsts.jobPositions) {
 			let tagObj = parseConsts.jobPositions[key];
 			for(let i = 0; i < tagObj.regexes.length; ++i) {
 				if((new RegExp(tagObj.regexes[i])).test(plainText)) {
-					tags.push(tagObj.tag);
+					jobTags.push(tagObj.tag);
 					break;
 				}
 			}
 		}
-		debug('Job tags:' + tags);
+		debug('Job tags:' + jobTags);
 
-		resolve({url: commentUrl, rawText: plainText, firstLine: firstLine, company: company, tags: tags});
+		//extract all location data from first line
+		let cities = [];
+		// some weird city names being false positived too regularly
+		let invalidCities = ['Of', 'San', 'Wa', 'Most', 'Mobile'];
+		//cache length for fastest iteration - prob doesn't matter
+		for(let i = 0, count = allCities.length; i < count; ++i) {
+			if(allCities[i].population > 100000 && !invalidCities.includes(allCities[i].name)) {
+				let cityName = allCities[i].name;
+				//edge cases
+				let regex = new RegExp('\\b(' + cityName + ')\\b', 'gi');
+				if(cityName == 'New York City') {regex = /\b(New York)|(NYC)\b/gi};
+				if(cityName == 'York' && /\b(New York)\b/gi.test(firstLine)) {continue;};
+
+				//debug(regex);
+				if(!cities.includes(cityName) && regex.test(firstLine)) {
+					cities.push(cityName);
+				}
+			}
+		}
+		debug('Cities: ' + cities);
+
+		// //extract state/province abbrv
+		// let stateAbbrev = '';
+		// for(let key in parseConsts.states) {
+		// 	let tagObj = parseConsts.states[key];
+		// 	for(let i = 0; i < tagObj.regexes.length; ++i) {
+		// 		if((new RegExp(tagObj.regexes[i])).test(plainText)) {
+		// 			stateAbbrev = tagObj.tag;
+		// 			break;
+		// 		}
+		// 	}
+		// 	if(stateAbbrev !== '') {
+		// 		break;
+		// 	}
+		// }
+		// debug('State/Province: ' + stateAbbrev);
+
+		//extract remote/onsite
+		let remoteTags = [];
+		for(let key in parseConsts.remoteTags) {
+			let tagObj = parseConsts.remoteTags[key];
+			for(let i = 0; i < tagObj.regexes.length; ++i) {
+				if((new RegExp(tagObj.regexes[i])).test(plainText)) {
+					remoteTags.push(tagObj.tag);
+					break;
+				}
+			}
+		}
+		debug('Onsite/Remote: ' + remoteTags);
+
+		resolve({
+			url: commentUrl, 
+			rawText: plainText, 
+			firstLine: firstLine, 
+			company: company, 
+			jobTags: jobTags,
+			cities: cities,
+			//state: stateAbbrev,
+			remoteTags: remoteTags,
+		});
 	}));
 }
 
@@ -142,5 +199,6 @@ function cleanupExtractionContent(string) {
 	cleanedMatch = cleanedMatch.replace(/</gi, '');
 	cleanedMatch = cleanedMatch.replace(/\(/gi, '');
 	cleanedMatch = cleanedMatch.replace(/ - /gi, '');
+	cleanedMatch = cleanedMatch.replace(/\//gi, '');
 	return cleanedMatch.trim();
 }

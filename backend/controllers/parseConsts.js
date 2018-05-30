@@ -1,6 +1,9 @@
-exports.companyRegex = /((\||^).+?(\||<p>|:|;|,|\bis\b|<|\(| - ))/gi;
+exports.companyRegex = /(?=((\||^).+?(\||<p>|:|;|,|\bis\b|<|\(| - |\/)))/gi;
 exports.firstLineRegex = /(^).*?(<p>)/g;
-exports.jobTitleFilters = [/engineers?\b/i, /developers?\b/i, /scientists?\b/i, /interns?\b/i, /administrators?\b/i, /managers?\b/i, /leads?\b/i, /devops\b/i];
+exports.jobTitleFilters = [/\bengineers?\b/i, /\bdevelopers?\b/i, /\bscientists?\b/i
+				, /\binterns?\b/i, /\badministrators?\b/i, /\bmanagers?\b/i
+				, /\bleads?\b/i, /\bdevops\b/i , /\bhi\b/i, /\bhello\b/i
+				, /\b\d+?k\b/i, /\bsalary\b/i, /a href=/i];
 
 exports.jobPositions = {
 	intern: {
@@ -81,4 +84,275 @@ exports.jobPositions = {
 	},
 }
 
-exports.languages = {}
+exports.remoteTags = {
+	onsite: {
+		tag: 'onsite',
+		regexes: [/\b(on).{0,9}(site)\b/i, /\b(full).{0,9}(time)\b/i]
+	},
+	remote: {
+		tag: 'remote',
+		regexes: [/\b(remote)\b/i]
+	}
+}
+
+//unused for now
+exports.states = {
+	//us states
+	Alabama: {
+		tag: 'AL',
+		regexes: [/\bAlabama\b/, /\bAL\b/]
+	},
+	Alaska: {
+		tag: 'AK',
+		regexes: [/\bAlaska\b/, /\bAK\b/]
+	},
+	Arizona: {
+		tag: 'AZ',
+		regexes: [/\bArizona\b/, /\bAZ\b/]
+	},
+	Arkansas: {
+		tag: 'AR',
+		regexes: [/\bArkansas\b/, /\bAR\b/]
+	},
+	California: {
+		tag: 'CA',
+		regexes: [/\bCalifornia\b/, /\bCA\b/]
+	},
+	Colorado: {
+		tag: 'CO',
+		regexes: [/\bColorado\b/, /\bCO\b/]
+	},
+	Connecticut: {
+		tag: 'CT',
+		regexes: [/\bConnecticut\b/, /\bCT\b/]
+	},
+	Delaware: {
+		tag: 'DE',
+		regexes: [/\bDelaware\b/, /\bDE\b/]
+	},
+	Florida: {
+		tag: 'FL',
+		regexes: [/\bFlorida\b/, /\bFL\b/]
+	},
+	Georgia: {
+		tag: 'GA',
+		regexes: [/\bGeorgia\b/, /\bGA\b/]
+	},
+	Hawaii: {
+		tag: 'HI',
+		regexes: [/\bHawaii\b/, /\bHI\b/]
+	},
+	Idaho: {
+		tag: 'ID',
+		regexes: [/\bIdaho\b/, /\bID\b/]
+	},
+	Illinois: {
+		tag: 'IL',
+		regexes: [/\bIllinois\b/, /\bIL\b/]
+	},
+	Indiana: {
+		tag: 'IN',
+		regexes: [/\bIndiana\b/, /\bIN\b/]
+	},
+	Iowa: {
+		tag: 'IA',
+		regexes: [/\bIowa\b/, /\bIA\b/]
+	},
+	Kansas: {
+		tag: 'KS',
+		regexes: [/\bKansas\b/, /\bKS\b/]
+	},
+	Kentucky: {
+		tag: 'KY',
+		regexes: [/\bKentucky\b/, /\bKY\b/]
+	},
+	Louisiana: {
+		tag: 'LA',
+		regexes: [/\bLouisiana\b/, /\bLA\b/]
+	},
+	Maine: {
+		tag: 'ME',
+		regexes: [/\bMaine\b/, /\bME\b/]
+	},
+	Maryland: {
+		tag: 'MD',
+		regexes: [/\bMaryland\b/, /\bMD\b/]
+	},
+	Massachusetts: {
+		tag: 'MA',
+		regexes: [/\bMassachusetts\b/, /\bMA\b/]
+	},
+	Michigan: {
+		tag: 'MI',
+		regexes: [/\bMichigan\b/, /\bMI\b/]
+	},
+	Minnesota: {
+		tag: 'MN',
+		regexes: [/\bMinnesota\b/, /\bMN\b/]
+	},
+	Mississippi: {
+		tag: 'MS',
+		regexes: [/\bMississippi\b/, /\bMS\b/]
+	},
+	Missouri: {
+		tag: 'MO',
+		regexes: [/\bMissouri\b/, /\bMO\b/]
+	},
+	Montana: {
+		tag: 'MT',
+		regexes: [/\bMontana\b/, /\bMT\b/]
+	},
+	Nebraska: {
+		tag: 'NE',
+		regexes: [/\bNebraska\b/, /\bNE\b/]
+	},
+	Nevada: {
+		tag: 'NV',
+		regexes: [/\bNevada\b/, /\bNV\b/]
+	},
+	NewHampshire: {
+		tag: 'NH',
+		regexes: [/\bNew Hampshire\b/, /\bNH\b/]
+	},
+	NewJersey: {
+		tag: 'NJ',
+		regexes: [/\bNew Jersey\b/, /\bNJ\b/]
+	},
+	NewMexico: {
+		tag: 'NM',
+		regexes: [/\bNew Mexico\b/, /\bNM\b/]
+	},
+	NewYork: {
+		tag: 'NY',
+		regexes: [/\bNew York\b/, /\bNY\b/]
+	},
+	NewYork: {
+		tag: 'NY',
+		regexes: [/\bNew York\b/, /\bNY\b/]
+	},
+	NorthCarolina: {
+		tag: 'NC',
+		regexes: [/\bNew Carolina\b/, /\bNC\b/]
+	},
+	NorthDakota: {
+		tag: 'NC',
+		regexes: [/\bNew Dakota\b/, /\bND\b/]
+	},
+	Ohio: {
+		tag: 'OH',
+		regexes: [/\bOhio\b/, /\bOH\b/]
+	},
+	Oklahoma: {
+		tag: 'OK',
+		regexes: [/\bOklahoma\b/, /\bOK\b/]
+	},
+	Oregon: {
+		tag: 'OR',
+		regexes: [/\bOregon\b/, /\bOR\b/]
+	},
+	Pennsylvania: {
+		tag: 'PA',
+		regexes: [/\bPennsylvania\b/, /\bPA\b/]
+	},
+	RhodeIsland: {
+		tag: 'RI',
+		regexes: [/\bRhode Island\b/, /\bRI\b/]
+	},
+	SouthCarolina: {
+		tag: 'SC',
+		regexes: [/\bSouth Carolina\b/, /\bSC\b/]
+	},
+	SouthDakota: {
+		tag: 'SD',
+		regexes: [/\bSouth Dakota\b/, /\bSD\b/]
+	},
+	Tennessee: {
+		tag: 'TN',
+		regexes: [/\bTennessee\b/, /\bTN\b/]
+	},
+	Texas: {
+		tag: 'TX',
+		regexes: [/\bTexas\b/, /\bTX\b/]
+	},
+	Utah: {
+		tag: 'UT',
+		regexes: [/\bUtah\b/, /\bUT\b/]
+	},
+	Vermont: {
+		tag: 'VT',
+		regexes: [/\bVermont\b/, /\bVT\b/]
+	},
+	Virginia: {
+		tag: 'VA',
+		regexes: [/\bVirginia\b/, /\bVA\b/]
+	},
+	Washington: {
+		tag: 'WA',
+		regexes: [/\bWashington\b/, /\bWA\b/]
+	},
+	WestVirginia: {
+		tag: 'WV',
+		regexes: [/\bWest Virginia\b/, /\bWV\b/]
+	},
+	Wisconsin: {
+		tag: 'WI',
+		regexes: [/\bWisconsin\b/, /\bWI\b/]
+	},
+	Wyoming: {
+		tag: 'WY',
+		regexes: [/\bWyoming\b/, /\bWY\b/]
+	},
+	//canadian
+	Alberta: {
+		tag: 'AB',
+		regexes: [/\bAlberta\b/, /\bAB\b/]
+	},
+	BritishColumbia: {
+		tag: 'BC',
+		regexes: [/\bBritish Columbia\b/, /\bBC\b/]
+	},
+	Manitoba: {
+		tag: 'MB',
+		regexes: [/\bManitoba\b/, /\bMB\b/]
+	},
+	NewBrunswick: {
+		tag: 'NB',
+		regexes: [/\bNew Brunswick\b/, /\bNB\b/]
+	},
+	Newfoundland: {
+		tag: 'NL',
+		regexes: [/\bNewfoundland and Labrador\b/, /\bNL\b/]
+	},
+	NovaScotia: {
+		tag: 'NS',
+		regexes: [/\bNova Scotia\b/, /\bNS\b/]
+	},
+	NorthwestTerritories: {
+		tag: 'NT',
+		regexes: [/\bNorthwest Territories\b/, /\bNT\b/]
+	},
+	Nunavut: {
+		tag: 'NU',
+		regexes: [/\bNunavut\b/, /\bNU\b/]
+	},
+	Ontario: {
+		tag: 'ON',
+		regexes: [/\bOntario\b/, /\bON\b/]
+	},
+	PEI: {
+		tag: 'PE',
+		regexes: [/\bPrince Edward Islands?\b/, /\bPE\b/]
+	},
+	Quebec: {
+		tag: 'QC',
+		regexes: [/\bQuebec\b/, /\bQC\b/]
+	},
+	Saskatchewan: {
+		tag: 'SK',
+		regexes: [/\bSaskatchewan\b/, /\bSK\b/]
+	},
+	Yukon: {
+		tag: 'YT',
+		regexes: [/\bYukon\b/, /\bYT\b/]
+	},
+}

@@ -8,10 +8,11 @@ var PostingSchema = new Schema(
 	{
 		postingId: {type: Number, required: true, index: true, unique: true},
 		postingText: {type: String, required: true},
+		postingFirstLine: {type: String, required: true},
 		postingDate: {type: Date, required: true},
 
 		company: {type: String, maxlength: 100},
-		location: {type: String, maxlength: 100},
+		locations: [String],
 		positionTags: [String],
 		languageTags: [String],
 		salary: {type: String, max: 100},
