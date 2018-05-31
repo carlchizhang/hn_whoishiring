@@ -8,15 +8,16 @@ var PostingSchema = new Schema(
 	{
 		postingId: {type: Number, required: true, index: true, unique: true},
 		postingText: {type: String, required: true},
+		postingTime: {type: Number, required: true},
 		postingFirstLine: {type: String, required: true},
-		postingDate: {type: Date, required: true},
 
 		company: {type: String, maxlength: 100},
 		locations: [String],
-		positionTags: [String],
-		languageTags: [String],
-		salary: {type: String, max: 100},
-		costOfLivingIndex: {type: Number, min: 0},
+		jobTags: [String],
+		remoteTags: [String],
+		//languageTags: [String],
+		//salary: {type: String, max: 100},
+		//costOfLivingIndex: {type: Number, min: 0},
 
 		//not implemented yet
 		// companyRating: {type: Number, min: 0, max: 5},

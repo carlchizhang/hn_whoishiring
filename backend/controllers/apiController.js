@@ -18,6 +18,6 @@ exports.fetchNewPostings = function(req, res) {
 	var refreshPromise = databaseController.refreshPostingsFromHN(1);
 	refreshPromise.then(results => {
 		//debug(results);
-		res.render('refreshTest', {results: results});
+		res.send('Refresh started, check console for more details');
 	});
 }
