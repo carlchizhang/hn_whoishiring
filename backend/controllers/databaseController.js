@@ -226,9 +226,14 @@ exports.refreshPostingsFromHN = function(numMonths) {
 	}));
 }
 
-//return a list of postings stored in the database
+//return a list of postingIds stored in the database
 exports.getPostingList = function(callback) {
-	Posting.find().exec(callback);
+	Posting.find({}, 'postingId').exec(callback);
+}
+
+//return a single document stored in the database
+exports.getPostingById = function(id, callback) {
+	Posting.find({postingId: id}).exec(callback);
 }
 
 function cleanupExtractionContent(string) {

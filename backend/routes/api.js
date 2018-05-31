@@ -10,6 +10,9 @@ router.get('/', apiController.hello);
 /* GET list of postings. */
 router.get('/postings', apiController.postingList);
 
+/* GET a single posting doc */
+router.get('/posting/:id', apiController.postingById);
+
 /* GET list of postings. */
 router.get('/refresh', apiController.fetchNewPostings);
 

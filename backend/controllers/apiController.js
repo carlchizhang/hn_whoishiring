@@ -9,7 +9,16 @@ exports.postingList = function(req, res) {
 	//maybe do querying HackerNews api here
 	databaseController.getPostingList(function (err, postingList) {
 		if (err) { return next(err); }
+		debug(postingList);
 		res.send(postingList);
+	});
+}
+
+exports.postingById = function(req, res, next) {
+	databaseController.getPostingById(req.params.id, function (err, postingDoc) {
+		if (err) { return next(err); }
+		debug(postingDoc);
+		res.send(postingDoc);
 	});
 }
 
