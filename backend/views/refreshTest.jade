@@ -4,19 +4,18 @@ block content
 	ul
 	each item in results
 		li
-			a(href=item.url) #{item.url}
 			p #{item.rawText}
 			br
 			p #{item.firstLine}
-			ul
+			br
 			p #{item.company}
-			each tag in item.jobTags
+			br
+			p #{item.role}
+			br
+			p #{item.location}
+			ul
+			each tag in item.fieldTags
 				span #{tag}, 
-			br
-			br
-			br
-			each city in item.cities
-				span #{city}, 
 			br
 			br
 			br

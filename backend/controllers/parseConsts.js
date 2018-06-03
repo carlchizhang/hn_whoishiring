@@ -1,4 +1,4 @@
-exports.companyRegex = /(?=((\||^).+?(\||<p>|:|;|,|\bis\b|<|\(| - |\/)))/gi;
+exports.bracketsRegex = /(?=((\||^| - ).+?(\|| - )))/gi;
 exports.firstLineRegex = /(^).*?(<p>)/g;
 exports.jobTitleFilters = [/\bengineers?\b/i, /\bdevelopers?\b/i, /\bscientists?\b/i
 				, /\binterns?\b/i, /\badministrators?\b/i, /\bmanagers?\b/i
@@ -64,7 +64,7 @@ exports.jobPositions = {
 	},
 	web: {
 		tag: 'web',
-		regexes: [/\bweb\b/i]
+		regexes: [/\bweb.{0,9}developers?\b/i]
 	},
 	desktop: {
 		tag: 'desktop',
@@ -83,6 +83,8 @@ exports.jobPositions = {
 		regexes: [/\b(hardware)\b/i, /\b(electronics)\b/i]
 	},
 }
+
+exports.salary = [/\b\d+k\b/gi, /\b\$/gi, /\b£/gi, /\b€/gi, /\bequity\b/gi, /\bstock options?\b/gi];
 
 exports.remoteTags = {
 	onsite: {

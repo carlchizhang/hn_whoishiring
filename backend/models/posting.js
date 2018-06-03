@@ -12,8 +12,10 @@ var PostingSchema = new Schema(
 		postingFirstLine: {type: String, required: true},
 
 		company: {type: String, maxlength: 100},
-		locations: [String],
-		jobTags: [String],
+		location: {type: String, maxlength: 100},
+    role: {type: String, maxlength: 100},
+    salary: {type: String, maxlength: 100},
+		fieldTags: [String],
 		remoteTags: [String],
 		//languageTags: [String],
 		//salary: {type: String, max: 100},

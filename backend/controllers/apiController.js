@@ -18,7 +18,7 @@ exports.postingById = function(req, res, next) {
 	databaseController.getPostingById(req.params.id, function (err, postingDoc) {
 		if (err) { return next(err); }
 		debug(postingDoc);
-		res.send(postingDoc);
+		res.send(postingDoc[0]);
 	});
 }
 
@@ -26,7 +26,8 @@ exports.postingById = function(req, res, next) {
 exports.fetchNewPostings = function(req, res) {
 	var refreshPromise = databaseController.refreshPostingsFromHN(1);
 	refreshPromise.then(results => {
-		//debug(results);
-		res.send('Refresh started, check console for more details');
+		debug(results);
+		//res.render('refreshTest', {results: results});
+    res.send('Refresh complete, see console for details.');
 	});
 }

@@ -61,8 +61,8 @@ exports.refreshPostingsFromHN = function(numMonths) {
 			}
 		});
 
-		whoishiringComments = arr_diff(allComments.slice(0, 1100), allFoundComments);
-		whoishiringComments = whoishiringComments;
+		//whoishiringComments = arr_diff(allComments.slice(0, 1100), allFoundComments);
+		whoishiringComments = allComments;
 		//debug('allComments: ' + allComments);
 		//debug('allFoundComments: ' + allFoundComments);
 		debug('Updating comment list: ' + whoishiringComments);
@@ -95,7 +95,7 @@ exports.refreshPostingsFromHN = function(numMonths) {
 		// lets save the new postings
 		savePromises = [];
 		posting.forEach((element) => {
-			debug('Saving element: ' + JSON.stringify(element));
+			//debug('Saving element: ' + JSON.stringify(element));
 			//use findOneAndUpdate just in case it already exists
 			savePromises.push(Posting.findOneAndUpdate({postingId: element.postingId}, element, {upsert:true}));
 		});
@@ -125,87 +125,109 @@ exports.refreshPostingsFromHN = function(numMonths) {
 			firstLine = match[0].replace(/<p>/gi, '').trim();
 		}
 		//debug(match);
-		//debug('First Line: ' + firstLine);
+		debug('First Line: ' + firstLine);
 		posting.postingFirstLine = firstLine;
 
-		//extract all data between square brackets to find company name
-		let regexExpression = new RegExp(parseConsts.companyRegex);
-		let companyResults = [];
+		//extract all data between square brackets
+		let regexExpression = new RegExp(parseConsts.bracketsRegex);
+		let bracketResults = [];
 		while ((match = regexExpression.exec(firstLine)) != null ) { 
 			if(match.index === regexExpression.lastIndex) {
 				regexExpression.lastIndex++;
 			}
 			//debug('Matched: ' + cleanupExtractionContent(match[1]));
-			companyResults.push(cleanupExtractionContent(match[1]));
+			bracketResults.push(cleanupExtractionContent(match[1]));
 		}
-		let company = '!error parsing company name';
-		for(let i = 0; i < companyResults.length; ++i){
-			let validCompanyName = true;
-			let filters = parseConsts.jobTitleFilters;
-			filters.forEach((job) => {
-				if(companyResults[i].search(new RegExp(job)) != -1) {
-					validCompanyName = false;
-				}
-			});
-			if(validCompanyName) {
-				company = companyResults[i];
-				break;
-			}
-		};
-		//debug('Company: ' + company);
-		posting.company = company;
 
-		//extract all job position tags
-		let jobTags = [];
+		let company = null;
+    let role = null;
+    let location = null;
+    let salary = null;
+    let invalidCities = ['Of', 'San', 'Wa', 'Most', 'Mobile'];
+		for(let i = 0; i < bracketResults.length; ++i){
+      let isLocation = false;
+      let isRole = false;
+      let isSalary = false;
+
+      if(role === null) {
+        for(let key in parseConsts.jobPositions) {
+          let tagObj = parseConsts.jobPositions[key];
+          for(let j = 0; j < tagObj.regexes.length && !isRole; ++j) {
+            if((new RegExp(tagObj.regexes[j])).test(bracketResults[i])) {
+              isRole = true;
+            }
+          }
+          if(isRole) {
+            role = bracketResults[i];
+            break;
+          }
+        }
+      }
+
+      if(location === null && !isRole) {
+        for(let j = 0, count = allCities.length; j < count; ++j) {
+          if(allCities[j].population > 100000 && !invalidCities.includes(allCities[j].name)) {
+            let cityName = allCities[j].name;
+            //edge cases
+            let regex = new RegExp('\\b(' + cityName + ')\\b', 'gi');
+            if(cityName == 'New York City') {regex = /\b(New York)|(NYC)\b/gi};
+            if(cityName == 'York' && /\b(New York)\b/gi.test(bracketResults[i])) {continue;};
+            //debug(regex);
+            if(regex.test(bracketResults[i])) {
+              isLocation = true;
+              location = bracketResults[i];
+              break;
+            }
+          }
+        }        
+      }
+
+      if(salary === null && !isRole && !isLocation) {
+        for(let j = 0; j < parseConsts.salary.length; ++j) {
+          let regex = new RegExp(parseConsts.salary[j]);
+          if(regex.test(bracketResults[i])) {
+            isSalary = true;
+            salary = bracketResults[i];
+            debug('regex: ' + regex + ' salary: ' + salary);
+            break;
+          }
+        }
+      }
+
+      if(company === null && !isRole && !isLocation && !isSalary) {
+        //debug('Company assigned: ' + bracketResults[i]);
+			  company = bracketResults[i];
+      }
+
+      debug('Content: ' + bracketResults[i]);
+      debug('isRole: ' + isRole);
+      debug('isLocation: ' + isLocation);
+      debug('isSalary: ' + isSalary)
+      debug('isCompany: ' + (!isRole && !isLocation && !isSalary));
+		};
+		debug('Company: ' + company);
+    debug('Role: ' + role);
+    debug('Location: ' + location);
+    debug('Salary: ' + salary);
+    posting.company = company;
+    posting.location = location;
+    posting.role = role;
+    posting.salary = salary;
+
+
+		//extract all field tags
+		let fieldTags = [];
 		for(let key in parseConsts.jobPositions) {
 			let tagObj = parseConsts.jobPositions[key];
 			for(let i = 0; i < tagObj.regexes.length; ++i) {
 				if((new RegExp(tagObj.regexes[i])).test(plainText)) {
-					jobTags.push(tagObj.tag);
+					fieldTags.push(tagObj.tag);
 					break;
 				}
 			}
 		}
 		//debug('Job tags:' + jobTags);
-		posting.jobTags = jobTags.slice(0);
-
-		//extract all location data from first line
-		let cities = [];
-		// some weird city names being false positived too regularly
-		let invalidCities = ['Of', 'San', 'Wa', 'Most', 'Mobile'];
-		//cache length for fastest iteration - prob doesn't matter
-		for(let i = 0, count = allCities.length; i < count; ++i) {
-			if(allCities[i].population > 100000 && !invalidCities.includes(allCities[i].name)) {
-				let cityName = allCities[i].name;
-				//edge cases
-				let regex = new RegExp('\\b(' + cityName + ')\\b', 'gi');
-				if(cityName == 'New York City') {regex = /\b(New York)|(NYC)\b/gi};
-				if(cityName == 'York' && /\b(New York)\b/gi.test(firstLine)) {continue;};
-
-				//debug(regex);
-				if(!cities.includes(cityName) && regex.test(firstLine)) {
-					cities.push(cityName);
-				}
-			}
-		}
-		//debug('Cities: ' + cities);
-		posting.locations = cities.slice(0);
-
-		// //extract state/province abbrv
-		// let stateAbbrev = '';
-		// for(let key in parseConsts.states) {
-		// 	let tagObj = parseConsts.states[key];
-		// 	for(let i = 0; i < tagObj.regexes.length; ++i) {
-		// 		if((new RegExp(tagObj.regexes[i])).test(plainText)) {
-		// 			stateAbbrev = tagObj.tag;
-		// 			break;
-		// 		}
-		// 	}
-		// 	if(stateAbbrev !== '') {
-		// 		break;
-		// 	}
-		// }
-		// debug('State/Province: ' + stateAbbrev);
+		posting.fieldTags = fieldTags.slice(0);
 
 		//extract remote/onsite
 		let remoteTags = [];
@@ -239,15 +261,8 @@ exports.getPostingById = function(id, callback) {
 function cleanupExtractionContent(string) {
 	let cleanedMatch = string;
 	cleanedMatch = cleanedMatch.replace(/\|/gi, '');
-	cleanedMatch = cleanedMatch.replace(/<p>/gi, '');
-	cleanedMatch = cleanedMatch.replace(/:/gi, '');
-	cleanedMatch = cleanedMatch.replace(/,/gi, '');
-	cleanedMatch = cleanedMatch.replace(/;/gi, '');
-	cleanedMatch = cleanedMatch.replace(/\bis\b/gi, '');
-	cleanedMatch = cleanedMatch.replace(/</gi, '');
-	cleanedMatch = cleanedMatch.replace(/\(/gi, '');
 	cleanedMatch = cleanedMatch.replace(/ - /gi, '');
-	cleanedMatch = cleanedMatch.replace(/\//gi, '');
+  cleanedMatch = cleanedMatch.replace(/(<a>).+(<\/a>)/gi, '');
 	return cleanedMatch.trim();
 }
 
