@@ -9,6 +9,9 @@ import rolesIcon from '../icons/roles.svg';
 import salaryIcon from '../icons/salary.svg';
 import visaIcon from '../icons/visa.svg';
 import linkIcon from '../icons/link.svg';
+import starIconChecked from '../icons/star.svg';
+import starIconUnchecked from '../icons/star_outline.svg';
+import removeIcon from '../icons/delete.svg';
 
 const LABEL_MAX_LENGTH = 100;
 const HN_LINK_BASE = 'https://news.ycombinator.com/item?id=';
@@ -29,11 +32,22 @@ function IconTextBox(props) {
   }
 }
 
+function ToolBox(props) {
+  return (
+    <div className='tool-box'>
+      <img className='tool-box-icon' src={props.removeIcon} alt={'Remove'} title={'Remove'}/>
+      <img className='tool-box-icon' src={props.pinIcon} alt={'Pin'} title={'Pin'}/>
+      <img className='tool-box-icon' src={props.expandIcon} alt={'Details'} title={'Details'}/>
+    </div>
+  );
+}
+
 class PostingCard extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			expanded: false,
+      favorited: false,
 		};
 	}
 
@@ -52,7 +66,7 @@ class PostingCard extends Component {
 
       //appearances
       let expandableSectionHeight = this.state.expanded ? 240 : 40;
-      let cardHeight = 100 + expandableSectionHeight
+      let cardHeight = 80 + expandableSectionHeight
       return (
         <div className='posting-card' style={{height: cardHeight+'px'}}>
           <div className='posting-card-info-section'>
@@ -89,6 +103,7 @@ class PostingCard extends Component {
             { !this.state.expanded &&
             <div className='collapsed-section'>
               <div className='first-line-text ellipsis-text' dangerouslySetInnerHTML={{__html: firstLine}} />
+              <ToolBox removeIcon={removeIcon} pinIcon={starIconChecked} expandIcon={starIconUnchecked}/>
             </div>
             }
             { this.state.expanded &&

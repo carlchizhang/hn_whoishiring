@@ -7,16 +7,13 @@
 
 /*------------------------------- Card ---------------------------------*/
 .posting-card {
-  width: 1400px;
+  width: 1200px;
   max-width: 98%;
+  min-width: 400px;
   background-color: var(--main-background-color);
 
   box-shadow: 0 4px 4px 0 rgba(0,0,0,0.5);
   transition: 0.3s;
-}
-
-.posting-card:hover {
-  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.5);
 }
 
 /*------------------------------- Info Section ---------------------------------*/
@@ -27,7 +24,7 @@
   align-items: top;
 
   width: 100%;
-  height: 100px;
+  height: 80px;
   margin: 0;
 
   position: relative;
@@ -38,7 +35,7 @@
 
 .info-left-sections {
   width: 40%;
-  height: 100px;
+  height: 100%;
   padding: 12px;
 
   //border: 1px solid black;
@@ -46,7 +43,7 @@
 
 .info-right-section {
   width: 20%;
-  height: 100px;
+  height: 100%;
   padding: 10px;
   //border: 1px solid black;
 }
@@ -62,14 +59,14 @@
 }
 
 .icon-text-box-icon {
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
 }
 
 .icon-text-box-text {
   margin-left: 12px;
 
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 500;
 }
 
@@ -91,7 +88,7 @@
 .date-link-box a {
   display: flex;
   justify-content: flex-end;
-  height: 20px;
+  height: 100%;
   text-decoration-color: var(--highlight-color);
 }
 
@@ -106,7 +103,7 @@
   justify-content: flex-end;
 
   width: 100%;
-  height: 60px;
+  height: 40px;
   //border: 1px solid black;
 }
 
@@ -121,13 +118,13 @@
 }
 
 .visa-icon {
-  height: 40px;
-  width: 40px;
+  height: 30px;
+  width: 30px;
 }
 
 .remote-icon {
-  height: 40px;
-  width: 40px;
+  height: 30px;
+  width: 30px;
 }
 
 /*------------------------------- Expandable ---------------------------------*/
@@ -135,23 +132,57 @@
   background-color: var(--lighter-background-color);
 }
 
+.tool-box {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  //border: 1px solid black;
+
+  width: 110px;
+  height: 25px;
+  margin-top: 5px;
+}
+
+.tool-box-icon {
+  height: 25px;
+  width: 25px;
+
+  margin-left: 8px;
+
+  -webkit-transition-duration: 0.2s;
+  transition-duration: 0.2s;
+  -webkit-transition-property: transform;
+  transition-property: transform;
+}
+
+.tool-box-icon:hover {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+}
+
 /*------------------------------- Expanded Section ---------------------------------*/
 .expanded-section {
   height: 100%;
   width: 100%;
-  padding: 18px;
 }
 
 /*------------------------------- Collapsed Section---------------------------------*/
 .collapsed-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
   height: 100%;
   width: 100%;
-  padding: 12px;
+  padding-left: 12px;
+  padding-right: 8px;
 }
 
 .first-line-text {
   font-size: 14px;
   line-height: 16px;
+
+  width: 100%;
 }
 
 /*
