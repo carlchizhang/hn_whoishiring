@@ -1,0 +1,168 @@
+.ellipsis-text {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/*------------------------------- Card ---------------------------------*/
+.posting-card {
+  width: 1400px;
+  max-width: 98%;
+  background-color: var(--main-background-color);
+
+  box-shadow: 0 4px 4px 0 rgba(0,0,0,0.5);
+  transition: 0.3s;
+}
+
+.posting-card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.5);
+}
+
+/*------------------------------- Info Section ---------------------------------*/
+
+.posting-card-info-section {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: top;
+
+  width: 100%;
+  height: 100px;
+  margin: 0;
+
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 5px 4px -2px rgba(0,0,0,0.6);
+  //background-color: Black;
+}
+
+.info-left-sections {
+  width: 40%;
+  height: 100px;
+  padding: 12px;
+
+  //border: 1px solid black;
+}
+
+.info-right-section {
+  width: 20%;
+  height: 100px;
+  padding: 10px;
+  //border: 1px solid black;
+}
+
+/*------------------------------- Icon Text Box ---------------------------------*/
+.icon-text-box {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+
+  width: 100%;
+  height: 50%;
+}
+
+.icon-text-box-icon {
+  width: 30px;
+  height: 30px;
+}
+
+.icon-text-box-text {
+  margin-left: 12px;
+
+  font-size: 20px;
+  font-weight: 500;
+}
+
+/*------------------------------- Info Right Section ---------------------------------*/
+.date-link-box {
+  width: 100%;
+  height: 20px;
+
+  //border: 1px solid black;
+}
+
+.date-text {
+  color: var(--highlight-color);
+  font-size: 14px;
+  text-align: right;
+  margin: 0px;
+}
+
+.date-link-box a {
+  display: flex;
+  justify-content: flex-end;
+  height: 20px;
+  text-decoration-color: var(--highlight-color);
+}
+
+.link-icon {
+  height: 20px;
+  width: 20px;
+  margin-left: 4px;
+}
+
+.icons-box {
+  display: flex;
+  justify-content: flex-end;
+
+  width: 100%;
+  height: 60px;
+  //border: 1px solid black;
+}
+
+.right-icon-div {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  margin-left: 8px;
+
+  //border: 1px solid black;
+}
+
+.visa-icon {
+  height: 40px;
+  width: 40px;
+}
+
+.remote-icon {
+  height: 40px;
+  width: 40px;
+}
+
+/*------------------------------- Expandable ---------------------------------*/
+.posting-card-expandable-section {
+  background-color: var(--lighter-background-color);
+}
+
+/*------------------------------- Expanded Section ---------------------------------*/
+.expanded-section {
+  height: 100%;
+  width: 100%;
+  padding: 18px;
+}
+
+/*------------------------------- Collapsed Section---------------------------------*/
+.collapsed-section {
+  height: 100%;
+  width: 100%;
+  padding: 12px;
+}
+
+.first-line-text {
+  font-size: 14px;
+  line-height: 16px;
+}
+
+/*
+.collapsed-break {
+  width: 80px;
+  line-height: 1px;
+  height: 1px;
+  border: 0;
+  margin: 0 0 0 16px;
+  border-bottom: 1px solid var(--highlight-color);
+  text-align: left;
+}
+*/
+
