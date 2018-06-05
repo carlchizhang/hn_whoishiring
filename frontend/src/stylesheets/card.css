@@ -10,7 +10,9 @@
   width: 1200px;
   max-width: 98%;
   min-width: 400px;
-  background-color: var(--main-background-color);
+  background-color: var(--card-background-color);
+
+  margin-top: 30px;
 
   box-shadow: 0 4px 4px 0 rgba(0,0,0,0.5);
   transition: 0.3s;
@@ -29,7 +31,7 @@
 
   position: relative;
   z-index: 1;
-  box-shadow: 0 5px 4px -2px rgba(0,0,0,0.6);
+  box-shadow: 0 5px 4px -2px rgba(0,0,0,0.5);
   //background-color: Black;
 }
 
@@ -56,22 +58,33 @@
 
   width: 100%;
   height: 50%;
+
+  margin-bottom: 5px;
 }
 
 .icon-text-box-icon {
-  width: 25px;
-  height: 25px;
+  width: 20px;
+  height: 20px;
+
+  font-size: 20px;
+  text-align: center;
+  color: var(--highlight-color);
 }
 
 .icon-text-box-text {
-  margin-left: 12px;
+  padding-left: 12px;
 
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 18px;
+  line-height: 30px;
+  font-family: 'Merriweather Sans', 'Lato', Helvetica, sans-serif;
+  font-weight: lighter;
 }
 
 /*------------------------------- Info Right Section ---------------------------------*/
 .date-link-box {
+  display: flex;
+  align-items: initial;
+  justify-content: flex-end;
   width: 100%;
   height: 20px;
 
@@ -89,13 +102,15 @@
   display: flex;
   justify-content: flex-end;
   height: 100%;
-  text-decoration-color: var(--highlight-color);
+  text-decoration: none;
 }
 
 .link-icon {
   height: 20px;
   width: 20px;
-  margin-left: 4px;
+  margin-left: 8px;
+  text-decoration: none;
+  color: var(--highlight-color);
 }
 
 .icons-box {
@@ -113,76 +128,150 @@
   justify-content: center;
 
   margin-left: 8px;
+  margin-right: 8px;
 
   //border: 1px solid black;
 }
 
-.visa-icon {
-  height: 30px;
-  width: 30px;
-}
+.visa-remote-icon {
+  width: 25px;
+  height: 25px;
 
-.remote-icon {
-  height: 30px;
-  width: 30px;
+  font-size: 25px;
+  text-align: center;
+  color: var(--highlight-color);
 }
 
 /*------------------------------- Expandable ---------------------------------*/
 .posting-card-expandable-section {
-  background-color: var(--lighter-background-color);
+  background-color: var(--card-lighter-background-color);
 }
 
 .tool-box {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   //border: 1px solid black;
 
   width: 110px;
-  height: 25px;
-  margin-top: 5px;
+  height: 40px;
+  padding-top: 8px;
 }
 
 .tool-box-icon {
   height: 25px;
   width: 25px;
 
+  text-align: center;
+  color: var(--highlight-color);
+  font-size: 22px;
+
   margin-left: 8px;
 
-  -webkit-transition-duration: 0.2s;
-  transition-duration: 0.2s;
+  -webkit-transition-duration: 0.1s;
+  transition-duration: 0.1s;
   -webkit-transition-property: transform;
   transition-property: transform;
 }
 
 .tool-box-icon:hover {
-  -webkit-transform: scale(1.1);
-  transform: scale(1.1);
+  -webkit-transform: scale(1.2);
+  transform: scale(1.2);
+}
+
+.tool-box-icon:active {
+  -webkit-transform: scale(1.0);
+  transform: scale(1.0);
 }
 
 /*------------------------------- Expanded Section ---------------------------------*/
 .expanded-section {
-  height: 100%;
   width: 100%;
+  padding: 0 8px 12px 12px;
+  transition: height 500ms 0ms;
+}
+
+.expanded-section.hide {
+  display: none;
+}
+
+.full-text-box {
+  padding: 8px;
+}
+
+.full-text, .full-text > * {
+  font-size: 16px;
+  line-height: 18px;
+}
+
+.tags-controls-section {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  width: 100%;
+}
+
+.tags-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+
+  margin-top: 6px;
+}
+
+.field-tags {
+  max-width: 90%;
+}
+
+.tag-box {
+  font-size: 14px;
+  font-weight: bolder;
+  font-family: Helvetica, sans-serif;
+  line-height: 16px;
+  color: var(--card-background-color);
+  background-color: var(--highlight-color);
+  border: 1px solid var(--highlight-color);
+  border-radius: 4px;
+
+  margin-top: 8px;
+  margin-left: 8px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.tag-classes-separator {
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 14px;
+  color: var(--highlight-color);
+
+  text-align: center;
+  vertical-align: middle;
+  margin-left: 12px;
+  margin-right: 4px;
 }
 
 /*------------------------------- Collapsed Section---------------------------------*/
 .collapsed-section {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
 
-  height: 100%;
+  height: 45px;
   width: 100%;
   padding-left: 12px;
   padding-right: 8px;
 }
+.collapsed-section.hide {
+  display: none;
+}
+
 
 .first-line-text {
-  font-size: 14px;
-  line-height: 16px;
-
-  width: 100%;
+  font-size: 16px;
+  line-height: 18px;
+  max-width: 90%;
 }
 
 /*

@@ -188,7 +188,7 @@ exports.refreshPostingsFromHN = function(numMonths) {
           if(regex.test(bracketResults[i])) {
             isSalary = true;
             salary = bracketResults[i];
-            debug('regex: ' + regex + ' salary: ' + salary);
+            //debug('regex: ' + regex + ' salary: ' + salary);
             break;
           }
         }

@@ -1,17 +1,7 @@
 import React, { Component } from 'react';
 import '../App.css'
 import '../stylesheets/card.css';
-
-import companyIcon from '../icons/company.svg';
-import locationIcon from '../icons/location.svg';
-import remoteIcon from '../icons/remote.svg';
-import rolesIcon from '../icons/roles.svg';
-import salaryIcon from '../icons/salary.svg';
-import visaIcon from '../icons/visa.svg';
-import linkIcon from '../icons/link.svg';
-import starIconChecked from '../icons/star.svg';
-import starIconUnchecked from '../icons/star_outline.svg';
-import removeIcon from '../icons/delete.svg';
+import '../stylesheets/webfonts/fontawesome-all.css';
 
 const LABEL_MAX_LENGTH = 100;
 const HN_LINK_BASE = 'https://news.ycombinator.com/item?id=';
@@ -20,7 +10,7 @@ function IconTextBox(props) {
   if(props.text !== null && props.text !== undefined) {
     return (
       <div className='icon-text-box'>
-        <img className='icon-text-box-icon' src={props.icon} alt={props.tooltip} title={props.tooltip}/>
+        <i className={'icon-text-box-icon ' + props.icon} alt={props.tooltip} title={props.tooltip}/>
         <p className='icon-text-box-text ellipsis-text'>
           {props.text}
         </p>
@@ -35,9 +25,19 @@ function IconTextBox(props) {
 function ToolBox(props) {
   return (
     <div className='tool-box'>
-      <img className='tool-box-icon' src={props.removeIcon} alt={'Remove'} title={'Remove'}/>
-      <img className='tool-box-icon' src={props.pinIcon} alt={'Pin'} title={'Pin'}/>
-      <img className='tool-box-icon' src={props.expandIcon} alt={'Details'} title={'Details'}/>
+      <i className='tool-box-icon fas fa-trash-alt' title={'Remove'}/>
+      { props.pinned &&
+        <i className='tool-box-icon fas fa-bookmark' onClick={props.togglePinned} title={'Unpin'}/>
+      }
+      { !props.pinned &&
+        <i className='tool-box-icon far fa-bookmark' onClick={props.togglePinned} title={'Pin'}/>
+      }
+      { props.expanded &&
+        <i className='tool-box-icon fas fa-angle-up' onClick={props.toggleExpanded} title={'Minimize'}/>
+      }
+      { !props.expanded &&
+        <i className='tool-box-icon fas fa-angle-down' onClick={props.toggleExpanded} title={'Expand'}/>
+      }
     </div>
   );
 }
@@ -47,9 +47,19 @@ class PostingCard extends Component {
 		super(props);
 		this.state = {
 			expanded: false,
-      favorited: false,
+      pinned: false,
 		};
 	}
+
+  toggleExpanded() {
+    let expanded = this.state.expanded;
+    this.setState({expanded: !expanded});
+  }
+
+  togglePinned() {
+    let pinned = this.state.pinned;
+    this.setState({pinned: !pinned});
+  }
 
 	render() {
     if(this.props.posting !== null && this.props.posting !== undefined) {
@@ -58,59 +68,83 @@ class PostingCard extends Component {
       let role = truncateString(this.props.posting.role, LABEL_MAX_LENGTH);
       let location = truncateString(this.props.posting.location, LABEL_MAX_LENGTH);
       let salary = truncateString(this.props.posting.salary, LABEL_MAX_LENGTH);
-      let visa = true;//this.props.posting.remoteTags.includes('visa');
-      let remote = true;//this.props.posting.remoteTags.includes('remote');
+      let visa = this.props.posting.remoteTags.includes('visa');
+      let remote = this.props.posting.remoteTags.includes('remote');
       let postingUrl = HN_LINK_BASE + this.props.posting.postingId;
       let firstLine = this.props.posting.postingFirstLine;
       let fullText = this.props.posting.postingText;
-
+      let fieldTags = this.props.posting.fieldTags;
+      let remoteTags = this.props.posting.remoteTags;
       //appearances
-      let expandableSectionHeight = this.state.expanded ? 240 : 40;
-      let cardHeight = 80 + expandableSectionHeight
       return (
-        <div className='posting-card' style={{height: cardHeight+'px'}}>
-          <div className='posting-card-info-section'>
+        <div className='posting-card'>
+          <div className='posting-card-info-section' onClick={this.toggleExpanded.bind(this)}>
             <div className='info-left-sections'>
-              <IconTextBox icon={companyIcon} text={company} tooltip={'Company'}/>
-              <IconTextBox icon={locationIcon} text={location} tooltip={'Location'}/>
+              <IconTextBox icon={'fas fa-building'} text={company} tooltip={'Company'}/>
+              <IconTextBox icon={'fas fa-map-marker-alt'} text={location} tooltip={'Location'}/>
             </div>
             <div className='info-left-sections'>
-              <IconTextBox icon={rolesIcon} text={role} tooltip={'Role'}/>
-              <IconTextBox icon={salaryIcon} text={salary} tooltip={'Salary'}/>
+              <IconTextBox icon={'fas fa-users'} text={role} tooltip={'Role'}/>
+              <IconTextBox icon={'fas fa-dollar-sign'} text={salary} tooltip={'Salary'}/>
             </div>
             <div className='info-right-section'>
               <div className='date-link-box'>
+                <p className='date-text ellipsis-text'>{'One day ago'}</p>
                 <a href={postingUrl} target={'_blank'}>
-                  <p className='date-text ellipsis-text'>{'One day ago'}</p>
-                  <img className='link-icon' src={linkIcon} alt={'Link'} title={'HackerNews Link'}/>
+                  <i className='link-icon fas fa-external-link-alt' alt={'Link'} title={'HackerNews Link'}/>
                 </a>
               </div>
               <div className='icons-box'>
                 <div className='right-icon-div'>
                 { visa === true &&
-                  <img className='visa-icon' src={visaIcon} alt={'Visa'} title={'Visa Offered'}/>
+                  <i className='visa-remote-icon fas fa-address-card' alt={'Visa'} title={'Visa Offered'}/>
                 }
                 </div>
                 <div className='right-icon-div'>
                 { remote === true &&
-                  <img className='remote-icon' src={remoteIcon} alt={'Remote'} title={'Remote Available'}/>
+                  <i className='visa-remote-icon fas fa-plane' alt={'Remote'} title={'Remote Available'}/>
                 }
                 </div>
               </div>
             </div>
           </div>
-          <div className='posting-card-expandable-section' style={{height: expandableSectionHeight+'px'}}>
-            { !this.state.expanded &&
-            <div className='collapsed-section'>
+          <div className='posting-card-expandable-section'>
+            <div className={'collapsed-section' + (this.state.expanded ? ' hide' : '')} onClick={this.toggleExpanded.bind(this)}>
               <div className='first-line-text ellipsis-text' dangerouslySetInnerHTML={{__html: firstLine}} />
-              <ToolBox removeIcon={removeIcon} pinIcon={starIconChecked} expandIcon={starIconUnchecked}/>
+              <ToolBox 
+                expanded={this.state.expanded} 
+                pinned={this.state.pinned} 
+                toggleExpanded={this.toggleExpanded.bind(this)}
+                togglePinned={this.togglePinned.bind(this)}
+              />
             </div>
-            }
-            { this.state.expanded &&
-            <div className='expanded-section'>
-              <div className='full-text ellipsis-text' dangerouslySetInnerHTML={{__html: fullText}} />
+            <div className={'expanded-section' + (this.state.expanded ? '' : ' hide')}>
+              <div className='tags-controls-section'>
+                <div className='field-tags tags-section'>
+                  { fieldTags.map(tag => {
+                    return <p key={tag} className={'tag-box'}>{tag}</p>
+                  })}
+                  { remoteTags.length > 0 && 
+                    <p className='tag-classes-separator'>|</p>
+                  }
+                  { remoteTags.length > 0 && 
+                    remoteTags.map(tag => {
+                      return <p key={tag} className={'tag-box'}>{tag}</p>
+                    })
+                  }
+                </div>
+                <ToolBox 
+                  className='expanded-tool-box' 
+                  expanded={this.state.expanded} 
+                  pinned={this.state.pinned} 
+                  toggleExpanded={this.toggleExpanded.bind(this)}
+                  togglePinned={this.togglePinned.bind(this)}
+                />
+              </div>
+              <div className='full-text-box'>
+                <div className='full-text' dangerouslySetInnerHTML={{__html: fullText}} />
+              </div>
             </div>
-            }
           </div>
         </div>
       );

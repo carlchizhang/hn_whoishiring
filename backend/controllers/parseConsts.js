@@ -109,7 +109,7 @@ exports.remoteTags = {
   },
   visa: {
     tag: 'visa',
-    regexes: [/\b(visa).{0,9}(offered|available)\b/i]
+    regexes: [/\bvisa\b/, /\b(visa).{0,9}(offered|available)\b/i /\b(work).{0,9}(permit)\b/gi]
   }
 }
 
