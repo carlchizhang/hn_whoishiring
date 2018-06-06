@@ -1,15 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
-import PostingCard from './components/PostingCard'
-
-
-const API_URL = '';
+import PostingListFilter from './containers/PostingListFilter';
+import {API_URL} from './actions/actions.js';
+import { updateVisiblePostings } from './actions/actions'
 
 class App extends Component {
-  state = {
-    postings: []
-  };
-
   componentDidMount() {
     let postingPromises = [];
     postingPromises.push(fetch(API_URL + '/api/posting/17208785').then(res => res.json()));
@@ -27,19 +22,17 @@ class App extends Component {
     Promise.all(postingPromises)
     .then(res => {
       console.log(res);
-      this.setState({ postings: res })
+      this.props.store.dispatch(updateVisiblePostings(res));
     })
     .catch(err => console.log(err));
   }
 
   render() {
     return (
-      <div className="App">
-      {
-        this.state.postings.map(posting => {
-          return <PostingCard key={posting.postingId} posting={posting}/>
-        })
-      }
+      <div className='App'>
+        <div className='App-header'>
+        </div>
+        <PostingListFilter/>
       </div>
     );
   }

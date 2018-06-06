@@ -25,7 +25,7 @@ function IconTextBox(props) {
 function ToolBox(props) {
   return (
     <div className='tool-box'>
-      <i className='tool-box-icon fas fa-trash-alt' title={'Remove'}/>
+      <i className='tool-box-icon fas fa-trash-alt' onClick={props.delete} title={'Remove'}/>
       { props.pinned &&
         <i className='tool-box-icon fas fa-bookmark' onClick={props.togglePinned} title={'Unpin'}/>
       }
@@ -51,6 +51,10 @@ class PostingCard extends Component {
 		};
 	}
 
+  deleteCard() {
+    this.props.deleteCard();
+  }
+
   toggleExpanded() {
     let expanded = this.state.expanded;
     this.setState({expanded: !expanded});
@@ -59,6 +63,7 @@ class PostingCard extends Component {
   togglePinned() {
     let pinned = this.state.pinned;
     this.setState({pinned: !pinned});
+    this.props.pinCard();
   }
 
 	render() {
@@ -75,6 +80,7 @@ class PostingCard extends Component {
       let fullText = this.props.posting.postingText;
       let fieldTags = this.props.posting.fieldTags;
       let remoteTags = this.props.posting.remoteTags;
+      let datePosted = timeSince(new Date(this.props.posting.postingTime*1000)) + ' Ago';
       //appearances
       return (
         <div className='posting-card'>
@@ -89,7 +95,7 @@ class PostingCard extends Component {
             </div>
             <div className='info-right-section'>
               <div className='date-link-box'>
-                <p className='date-text ellipsis-text'>{'One day ago'}</p>
+                <p className='date-text ellipsis-text'>{datePosted}</p>
                 <a href={postingUrl} target={'_blank'}>
                   <i className='link-icon fas fa-external-link-alt' alt={'Link'} title={'HackerNews Link'}/>
                 </a>
@@ -108,14 +114,15 @@ class PostingCard extends Component {
               </div>
             </div>
           </div>
-          <div className='posting-card-expandable-section'>
-            <div className={'collapsed-section' + (this.state.expanded ? ' hide' : '')} onClick={this.toggleExpanded.bind(this)}>
+          <div className={'posting-card-expandable-section' + (this.state.expanded ? ' collapsed' : ' expanded')}>
+            <div className={'collapsed-section' + (this.state.expanded ? ' hide' : '')}>
               <div className='first-line-text ellipsis-text' dangerouslySetInnerHTML={{__html: firstLine}} />
               <ToolBox 
                 expanded={this.state.expanded} 
                 pinned={this.state.pinned} 
                 toggleExpanded={this.toggleExpanded.bind(this)}
                 togglePinned={this.togglePinned.bind(this)}
+                delete={this.deleteCard.bind(this)}
               />
             </div>
             <div className={'expanded-section' + (this.state.expanded ? '' : ' hide')}>
@@ -139,6 +146,7 @@ class PostingCard extends Component {
                   pinned={this.state.pinned} 
                   toggleExpanded={this.toggleExpanded.bind(this)}
                   togglePinned={this.togglePinned.bind(this)}
+                  delete={this.deleteCard.bind(this)}
                 />
               </div>
               <div className='full-text-box'>
@@ -166,6 +174,46 @@ function truncateString(string, length = 50) {
   }
   let truncated = string.substr(0, length-1) + '...';
   return truncated;
+}
+
+function timeSince(date) {
+
+  var seconds = Math.floor((new Date() - date) / 1000);
+
+  var interval = Math.floor(seconds / 31536000);
+
+  if (interval > 1) {
+    return interval + " Years";
+  }
+  else if (interval === 1) {
+    return "One Year"
+  }
+  interval = Math.floor(seconds / 2592000);
+  if (interval > 1) {
+    return interval + " Months";
+  }
+  else if (interval === 1) {
+    return "One Month"
+  }
+  interval = Math.floor(seconds / 86400);
+  if (interval > 1) {
+    return interval + " Days";
+  }
+  else if (interval === 1) {
+    return "One Day"
+  }
+  interval = Math.floor(seconds / 3600);
+  if (interval > 1) {
+    return interval + " Hours";
+  }
+  else if (interval === 1) {
+    return "One Hour"
+  }
+  interval = Math.floor(seconds / 60);
+  if (interval > 1) {
+    return interval + " Minutes";
+  }
+  return Math.floor(seconds) + " Seconds";
 }
 
 export default PostingCard

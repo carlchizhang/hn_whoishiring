@@ -74,31 +74,21 @@ p {
 
 .App {
   width: 100%;
-  padding: 8px;
+  min-height: 100vh;
+
+  padding-top: 170px;
   background-color: var(--main-root-color);
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
-}
-
 .App-header {
-  background-color: #222;
+  width: 100%;
   height: 150px;
-  padding: 20px;
-  color: white;
-}
+  background-color: var(--card-background-color);
 
-.App-title {
-  font-size: 1.5em;
-}
-
-.App-intro {
-  font-size: large;
-}
-
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  box-shadow: 0 3px 4px 0 rgba(0,0,0,0.5);
 }

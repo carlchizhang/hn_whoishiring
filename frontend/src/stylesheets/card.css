@@ -7,14 +7,13 @@
 
 /*------------------------------- Card ---------------------------------*/
 .posting-card {
-  width: 1200px;
-  max-width: 98%;
+  width: 100%;
   min-width: 400px;
   background-color: var(--card-background-color);
 
-  margin-top: 30px;
+  margin-top: 20px;
 
-  box-shadow: 0 4px 4px 0 rgba(0,0,0,0.5);
+  box-shadow: 0 3px 4px 0 rgba(0,0,0,0.5);
   transition: 0.3s;
 }
 
@@ -74,7 +73,7 @@
 .icon-text-box-text {
   padding-left: 12px;
 
-  font-size: 18px;
+  font-size: 16px;
   line-height: 30px;
   font-family: 'Merriweather Sans', 'Lato', Helvetica, sans-serif;
   font-weight: lighter;
