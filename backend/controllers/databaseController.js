@@ -15,9 +15,8 @@ const POSTING_LIST_CACHE_PATH = './controllers/postingsList.json'
 const HN_API_ADDRESS = process.env.HN_API_URI || 'https://hacker-news.firebaseio.com/v0/';
 
 //refresh postings using hackernews api
-//TODO: speed this up, currently it takes over 10 seconds to poll the api
+//TODO: speed this up, currently it takes over 60 seconds to poll the api & parse
 exports.refreshPostingsFromHN = function(numMonths) {
-  // //get threads submitted by hn bot user/whoishiring, trim the freelancer threads
   const whoishiringUserAddr = HN_API_ADDRESS + 'user/whoishiring.json';
 
   let fetchCommentList = fetch(whoishiringUserAddr)
@@ -32,8 +31,6 @@ exports.refreshPostingsFromHN = function(numMonths) {
   })
   //grab relevant comments
   .then((results) => {
-    // let fetchRes = results[0];
-    // let findRes = results[1];
     let fetchRes = results;
     let whoishiringComments = extractKidsFromThreads(fetchRes, numMonths);
     //debug('allComments: ' + whoishiringComments);
@@ -46,6 +43,13 @@ exports.refreshPostingsFromHN = function(numMonths) {
       fetch(url).then(res => res.json()).catch(error => null)
     ));
   })
+  // .then(res => {
+  //   res.forEach(element => {
+  //     debug('|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||');
+  //     debug(element.ok);
+  //     debug(element.json());
+  //   })
+  // })
   //grab raw text of these comments and parse them if not already in MongoDB
   .then(resJSON => {
     parsePromises = [];
@@ -75,13 +79,10 @@ exports.refreshPostingsFromHN = function(numMonths) {
   Promise.all([fetchCommentList, cleanPostingCollection])
   .then(results => {
     let postings = results[0];
-    //debug('Results_0: ' + results[0]);
-    //debug('Results_1: ' + results[1]);
-    // lets save the new postings
+
     savePromises = [];
     postings.forEach((element) => {
       //debug('Saving element: ' + JSON.stringify(element));
-      //use findOneAndUpdate just in case it already exists
       savePromises.push(Posting.findOneAndUpdate({postingId: element.postingId}, element, {upsert:true}))
     });
     return Promise.all(savePromises);
