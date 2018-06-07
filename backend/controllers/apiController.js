@@ -17,7 +17,7 @@ exports.postingList = function(req, res) {
 exports.postingById = function(req, res, next) {
   databaseController.getPostingById(req.params.id, function (err, postingDoc) {
     if (err) { return next(err); }
-    debug(postingDoc);
+    //debug(postingDoc);
     res.send(postingDoc[0]);
   });
 }

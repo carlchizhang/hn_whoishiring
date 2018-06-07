@@ -5,7 +5,7 @@ import { pinCard, deleteCard} from '../actions/actions';
 const mapStateToProps = (state) => {
   console.log('mapping states');
   return {
-    postings: state.allPostingObjects,
+    postings: state.visiblePostings,
   }
 }
 

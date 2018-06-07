@@ -1,4 +1,4 @@
-export const API_URL = '';
+export const API_URL = '/api';
 
 export const fetchPostingRequest = postingId => ({
   type: 'FETCH_POSTING',

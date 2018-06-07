@@ -2,6 +2,8 @@ var Posting = require('../models/posting');
 var async = require('async');
 var fetch = require('node-fetch');
 var debug = require('debug')('backend:databaseController');
+var mongoose = require('mongoose');
+var fs = require('fs');
 
 //parsing stuff
 var parseConsts = require('./parseConsts');
@@ -9,9 +11,9 @@ var Entities = require('html-entities').AllHtmlEntities;
 var entities = new Entities();
 var allCities = require('all-the-cities');
 
+const POSTING_LIST_CACHE_PATH = './controllers/postingsList.json'
 const HN_API_ADDRESS = process.env.HN_API_URI || 'https://hacker-news.firebaseio.com/v0/';
 
-var whoishiringComments = [];
 //refresh postings using hackernews api
 //TODO: speed this up, currently it takes over 10 seconds to poll the api
 exports.refreshPostingsFromHN = function(numMonths) {
@@ -28,43 +30,13 @@ exports.refreshPostingsFromHN = function(numMonths) {
       fetch(url).then(res => res.json())
     ))
   })
-  .catch(error => console.error('Error fetching threads from HackerNews API: ', error));
-
-
-  //filter out threads that aren't whoishiring threads && check if children exists in db
-  let findExistingComments = fetchCommentList.then(resJSON => {
-    let whoishiringComments = extractKidsFromThreads(resJSON, numMonths);
-    //filter out items already stored in db
-    let findPromises = [];
-    whoishiringComments.forEach((commentId) => {
-      findPromises.push(Posting.findOne({postingId: commentId}));
-    });
-    return Promise.all(findPromises);
-  })
-  .catch(error => console.error('Error finding entries in MongoDB: ', error));
-  
-  return (Promise.all([fetchCommentList, findExistingComments])
   //grab relevant comments
   .then((results) => {
-    let fetchRes = results[0];
-    let findRes = results[1];
-    debug('fetchRes size: ' + fetchRes.length);
-    debug('findRes size: ' + findRes.length);
-    //test array
-    testingComments = [16988868];
-
-    let allComments = extractKidsFromThreads(fetchRes, numMonths);
-    let allFoundComments = [];
-    findRes.forEach(element => {
-      if(element != null) {
-        allFoundComments.push(element.postingId);
-      }
-    });
-
-    //whoishiringComments = arr_diff(allComments.slice(0, 1100), allFoundComments);
-    whoishiringComments = allComments;
-    //debug('allComments: ' + allComments);
-    //debug('allFoundComments: ' + allFoundComments);
+    // let fetchRes = results[0];
+    // let findRes = results[1];
+    let fetchRes = results;
+    let whoishiringComments = extractKidsFromThreads(fetchRes, numMonths);
+    //debug('allComments: ' + whoishiringComments);
     debug('Updating comment list: ' + whoishiringComments);
 
     commentUrls = whoishiringComments.map(id => HN_API_ADDRESS + 'item/' + id + '.json');
@@ -82,26 +54,40 @@ exports.refreshPostingsFromHN = function(numMonths) {
         //debug('Parsing & storing comment at index: ' + element.id);
         parsePromises.push(parseStoreRawText(element.id, element.time, element.text));
       }
-      else {
-        //debug(i);
-        //debug('NULLLLLLLLLLLLLLLLLLL');
-      }
+      // else {
+      //   debug(i);
+      //   debug('NULLLLLLLLLLLLLLLLLLL');
+      // }
     });
     return Promise.all(parsePromises);
   })
+  .catch(error => console.error('Error fetching threads from HackerNews API: ', error));
   //save it into mongoDB
-  .then(posting => {
-    //wipe database!!!!!!!!
+
+  //remove deleted entries
+  let cleanPostingCollection = fetchCommentList.then(postings => {
+    return mongoose.connection.db.dropCollection('postings');
+  })
+  .catch(error => console.error('Error dropping postings collection: ', error));
+
+  //break to wait
+  return (
+  Promise.all([fetchCommentList, cleanPostingCollection])
+  .then(results => {
+    let postings = results[0];
+    //debug('Results_0: ' + results[0]);
+    //debug('Results_1: ' + results[1]);
     // lets save the new postings
     savePromises = [];
-    posting.forEach((element) => {
+    postings.forEach((element) => {
       //debug('Saving element: ' + JSON.stringify(element));
       //use findOneAndUpdate just in case it already exists
-      savePromises.push(Posting.findOneAndUpdate({postingId: element.postingId}, element, {upsert:true}));
+      savePromises.push(Posting.findOneAndUpdate({postingId: element.postingId}, element, {upsert:true}))
     });
     return Promise.all(savePromises);
   })
   .then(query => {
+    //sanity checks
     debug('Done saving ' + query.length + ' items to MongoDB!');
   })
   .catch(error => console.error('Error fetching & storing data from HackerNews API: ', error)));
@@ -299,4 +285,21 @@ function arr_diff(a1, a2) {
     }
 
     return diff;
+}
+
+function savePostingListCache(postingList) {
+  let obj = {postings: postingList};
+  let rawdata = JSON.stringify(obj);
+  fs.writeFileSync(POSTING_LIST_CACHE_PATH, rawdata);
+}
+
+function readPostingListCache() {
+  let rawData = fs.readFileSync(POSTING_LIST_CACHE_PATH);
+  if(rawData !== null && rawData != undefined) {
+    let postingsInDb = JSON.parse(rawData).postings;
+    return postingsInDb;
+  }
+  else {
+    return [];
+  }
 }
