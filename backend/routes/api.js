@@ -14,6 +14,9 @@ router.get('/postings', apiController.postingList);
 router.get('/posting/:id', apiController.postingById);
 
 /* GET list of postings. */
-router.get('/refresh', apiController.fetchNewPostings);
+router.get('/refresh', apiController.refreshPostings);
+
+/* GET start interval to refresh postings */
+router.get('/refresh/interval', apiController.startRefreshPostingsInterval);
 
 module.exports = router;

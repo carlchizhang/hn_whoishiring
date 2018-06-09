@@ -12,19 +12,38 @@ var entities = new Entities();
 var allCities = require('all-the-cities');
 
 const POSTING_LIST_CACHE_PATH = './controllers/postingsList.json'
-const HN_API_ADDRESS = process.env.HN_API_URI || 'https://hacker-news.firebaseio.com/v0/';
+exports.HN_API_ADDRESS = process.env.HN_API_URI || 'https://hacker-news.firebaseio.com/v0/';
+
+const REFRESH_CYCLE_MILLISECONDS = 1800000;
+var refreshInterval = null;
+exports.startRefreshInterval = function() {
+  if(!refreshInterval) {
+    let _this = this;
+    _this.refreshPostingsFromHN(1)
+    interval = setInterval(function() { 
+      debug('Times up! Start a refresh');
+      _this.refreshPostingsFromHN(1); 
+    }, 
+    REFRESH_CYCLE_MILLISECONDS);
+    return 'Interval started';
+  }
+  else {
+    return 'Interval already running';
+  }
+}
 
 //refresh postings using hackernews api
 //TODO: speed this up, currently it takes over 60 seconds to poll the api & parse
 exports.refreshPostingsFromHN = function(numMonths) {
-  const whoishiringUserAddr = HN_API_ADDRESS + 'user/whoishiring.json';
+  const whoishiringUserAddr = exports.HN_API_ADDRESS + 'user/whoishiring.json';
 
-  let fetchCommentList = fetch(whoishiringUserAddr)
+  return (
+  fetch(whoishiringUserAddr)
   //convert threads into json and grab thread details
   .then(res => res.json())
   .then(resJSON => {
     let submitted = resJSON.submitted.slice(0, numMonths*3);
-    let threadUrls = submitted.map(id => HN_API_ADDRESS + 'item/' + id + '.json');
+    let threadUrls = submitted.map(id => exports.HN_API_ADDRESS + 'item/' + id + '.json');
     return Promise.all(threadUrls.map(url =>
       fetch(url).then(res => res.json())
     ))
@@ -36,52 +55,50 @@ exports.refreshPostingsFromHN = function(numMonths) {
     //debug('allComments: ' + whoishiringComments);
     debug('Updating comment list: ' + whoishiringComments);
 
-    commentUrls = whoishiringComments.map(id => HN_API_ADDRESS + 'item/' + id + '.json');
+    commentUrls = whoishiringComments.map(id => exports.HN_API_ADDRESS + 'item/' + id + '.json');
     //debug(commentUrls);
     debug('Total new top level comments: ' + commentUrls.length);
     return Promise.all(commentUrls.map(url =>
       fetch(url).then(res => res.json()).catch(error => null)
     ));
   })
-  // .then(res => {
-  //   res.forEach(element => {
-  //     debug('|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||');
-  //     debug(element.ok);
-  //     debug(element.json());
-  //   })
-  // })
-  //grab raw text of these comments and parse them if not already in MongoDB
+  //grab raw text of these comments and parse & save them / remove them from db if deleted
   .then(resJSON => {
     parsePromises = [];
+    let previousElement = 0;
     resJSON.forEach((element, i) => {
-      if(element != null && element != undefined && element.text != undefined && element.text != null) {
+      if(element != null && element != undefined) {
+        if(element.deleted) {
+          //debug('Tried to delete' + element.id);
+          Posting.deleteOne({postingId: element.id}).then(query => {
+            if(query !== null && query !== undefined) {
+              //debug(query);
+            }
+          }).catch(err => console.error('Error delete entry: ', error));
+
+          previousElement = element.id;
+        }
         //debug('Parsing & storing comment at index: ' + element.id);
-        parsePromises.push(parseStoreRawText(element.id, element.time, element.text));
+        else {
+          parsePromises.push(exports.parseStoreRawText(element.id, element.time, element.text));
+
+          previousElement = element.id;
+        }
       }
-      // else {
-      //   debug(i);
-      //   debug('NULLLLLLLLLLLLLLLLLLL');
-      // }
+      else {
+        debug(previousElement + ': NULL AFTER THIS ONE');
+      }
     });
     return Promise.all(parsePromises);
   })
-  .catch(error => console.error('Error fetching threads from HackerNews API: ', error));
   //save it into mongoDB
-
-  //remove deleted entries
-  let cleanPostingCollection = fetchCommentList.then(postings => {
-    return mongoose.connection.db.dropCollection('postings');
-  })
-  .catch(error => console.error('Error dropping postings collection: ', error));
-
-  //break to wait
-  return (
-  Promise.all([fetchCommentList, cleanPostingCollection])
-  .then(results => {
-    let postings = results[0];
-
+  .then(postings => {
     savePromises = [];
     postings.forEach((element) => {
+      if(element === null || element === undefined) {
+        return;
+      }
+      //debug(element);
       //debug('Saving element: ' + JSON.stringify(element));
       savePromises.push(Posting.findOneAndUpdate({postingId: element.postingId}, element, {upsert:true}))
     });
@@ -94,7 +111,7 @@ exports.refreshPostingsFromHN = function(numMonths) {
   .catch(error => console.error('Error fetching & storing data from HackerNews API: ', error)));
 }
 
- function parseStoreRawText(commentId, commentTime, rawText) {
+ exports.parseStoreRawText = function(commentId, commentTime, rawText) {
   return ( new Promise(function(resolve, reject) {
     let plainText = entities.decode(rawText.trim()).replace(/\r?\n|\r/g, ' ');
     //debug('Parsing comment: ' + plainText);
@@ -185,17 +202,7 @@ exports.refreshPostingsFromHN = function(numMonths) {
         //debug('Company assigned: ' + bracketResults[i]);
         company = bracketResults[i];
       }
-
-      //debug('Content: ' + bracketResults[i]);
-      //debug('isRole: ' + isRole);
-      //debug('isLocation: ' + isLocation);
-      //debug('isSalary: ' + isSalary)
-      //debug('isCompany: ' + (!isRole && !isLocation && !isSalary));
     };
-    //debug('Company: ' + company);
-    //debug('Role: ' + role);
-    //debug('Location: ' + location);
-    //debug('Salary: ' + salary);
     posting.company = company;
     posting.location = location;
     posting.role = role;
@@ -229,20 +236,34 @@ exports.refreshPostingsFromHN = function(numMonths) {
     }
     //debug('Onsite/Remote: ' + remoteTags);
     posting.remoteTags = remoteTags.slice(0);
-
+    posting.timeUpdated = Date.now();
     //debug(posting);
     resolve(posting);
   }));
 }
 
 //return a list of postingIds stored in the database
-exports.getPostingList = function(callback) {
-  Posting.find({}, 'postingId').exec(callback);
+exports.getPostingList = function() {
+  return (Posting.find({}, ['postingId', 'timeUpdated']));
 }
 
 //return a single document stored in the database
-exports.getPostingById = function(id, callback) {
-  Posting.find({postingId: id}).exec(callback);
+exports.getPostingById = function(id) {
+  return (Posting.find({postingId: id}));
+}
+
+exports.deletePosting = function(id) {
+  return (Posting.deleteOne({postingId: id}).catch(err => console.error('Error delete entry: ', error)))
+}
+
+exports.findAndUpdatePosting = function(posting) {
+  if(posting === null || posting === undefined) {
+    return;
+  }
+  else {
+    return (Posting.findOneAndUpdate({postingId: posting.postingId}, posting, {upsert:true})
+      .catch(err => console.error('Error delete entry: ', error)));
+  }
 }
 
 function cleanupExtractionContent(string) {
@@ -286,21 +307,4 @@ function arr_diff(a1, a2) {
     }
 
     return diff;
-}
-
-function savePostingListCache(postingList) {
-  let obj = {postings: postingList};
-  let rawdata = JSON.stringify(obj);
-  fs.writeFileSync(POSTING_LIST_CACHE_PATH, rawdata);
-}
-
-function readPostingListCache() {
-  let rawData = fs.readFileSync(POSTING_LIST_CACHE_PATH);
-  if(rawData !== null && rawData != undefined) {
-    let postingsInDb = JSON.parse(rawData).postings;
-    return postingsInDb;
-  }
-  else {
-    return [];
-  }
 }

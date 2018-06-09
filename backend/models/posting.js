@@ -20,12 +20,7 @@ var PostingSchema = new Schema(
     //languageTags: [String],
     //salary: {type: String, max: 100},
     //costOfLivingIndex: {type: Number, min: 0},
-
-    //not implemented yet
-    // companyRating: {type: Number, min: 0, max: 5},
-    // companySize: {type: Number, min: 0},
-    // companyRevenue: {type: Number, min: 0},
-    // companyIndustry: [String]
+    timeUpdated: {type: Date, required: true, default: Date.now}
   }
 );
 
