@@ -75,7 +75,7 @@
 
   font-size: 16px;
   line-height: 30px;
-  font-family: 'Merriweather Sans', 'Lato', Helvetica, sans-serif;
+  font-family: 'Comfortaa', 'Lato', Helvetica, sans-serif;
   font-weight: lighter;
 }
 
@@ -152,7 +152,7 @@
   justify-content: center;
   //border: 1px solid black;
 
-  width: 110px;
+  width: 60px;
   height: 40px;
   padding-top: 8px;
 }

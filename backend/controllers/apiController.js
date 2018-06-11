@@ -10,7 +10,7 @@ exports.postingList = function(req, res) {
   //maybe do querying HackerNews api here
   databaseController.getPostingList()
   .then(postingList => {
-    debug(postingList);
+    //debug(postingList);
     res.send(postingList);
   })
   .catch(err => next(err));

@@ -1,34 +1,65 @@
-import { combineReducers } from 'redux'
+import { UpdateTypes } from '../actions/actions'
+import { 
+  findPostingInArray, 
+  concatPostingArraysNoDuplicates,
+  removePostingElements,
+  dateCompare,
+  filterPostingsByStrings
+} from '../utilities/utilities'
 
 //state shape design
 const initialState = {
-  //postingList: [],
-  //fetchingPostingList: false,
-
-  //allPostingObjects: [],
+  isLoading: false,
+  allPostings: [],
+  currentLoadedIndex: 0,
 
   visiblePostings: [],
   pinnedPostings: [],
-  deletedPostings: [],
-
-  //fetchingPostingIds: [],
 
   //selectedTags: [],
-  //searchStrings: [],
+  searchStrings: [],
   //searchRegexes: [],
 }
 
-function visiblePostings(state = [], action) {
+function allPostings(state = [], action) {
+  switch(action.type) {
+    case 'RECEIVE_POSTING_LIST':
+      return action.allPostings;
+    default:
+      return state;
+  }
+}
+
+function isLoading(state = false, action) {
+  switch(action.type) {
+    case 'REQUEST_POSTING_LIST' :
+      return true;
+    case 'RECEIVE_POSTING_LIST' :
+      return false;
+    case 'REQUEST_POSTING_LIST_ERROR' :
+      return false;
+    default:
+      return state;
+  }
+}
+
+function visiblePostings(state = [], action, allPostings) {
   switch(action.type) {
     case 'PIN_CARD':
-      console.log('Pinned received - visiblePostings: ' + action.postingId);
-      return state;
-    case 'DELETE_CARD':
-      console.log('Deleted received - visiblePostings: ' + action.postingId);
       return state;
     case 'UPDATE_VISIBLE_POSTINGS':
-      console.log('Added: ' + action.postings.length);
-      return [...state, ...action.postings]
+      switch(action.subType) {
+        case UpdateTypes.ADD:
+          return concatPostingArraysNoDuplicates(state, action.postings);
+        case UpdateTypes.REMOVE:
+          return removePostingElements(state, action.postings);
+        case UpdateTypes.REPLACE:
+          return action.postings;
+        default:
+          return state;
+      }
+    case 'SEARCH_BY_STRINGS':
+      return filterPostingsByStrings(allPostings, action.searchStrings);
     default:
       return state;
   }
@@ -37,33 +68,38 @@ function visiblePostings(state = [], action) {
 function pinnedPostings(state = [], action) {
   switch (action.type) {
     case 'PIN_CARD':
-      console.log('Pinned received - pinnedPostings: ' + action.postingId);
       return state;
-    case 'DELETE_CARD':
-      console.log('Deleted received - pinnedPosting: ' + action.postingId);
-      return state;
+    case 'UPDATE_PINNED_POSTINGS':
+      switch(action.subType) {
+        case UpdateTypes.ADD:
+          return concatPostingArraysNoDuplicates(state, action.postings);
+        case UpdateTypes.REMOVE:
+          return removePostingElements(state, action.postings);
+        case UpdateTypes.REPLACE:
+          return action.postings.splice();
+        default:
+          return state;
+      }
     default:
       return state;
   }
 }
 
-function deletedPostings(state = [], action) {
+function searchStrings(state = [], action) {
   switch (action.type) {
-    case 'PIN_CARD':
-      console.log('Pinned received - deletedPostings: ' + action.postingId);
-      return state;
-    case 'DELETE_CARD':
-      console.log('Deleted received - deletedPostings: ' + action.postingId);
-      return state;
+    case 'SEARCH_BY_STRINGS':
+      return action.searchStrings;
     default:
       return state;
-  }  
+  }
 }
 
 export default function rootReducer(state = initialState, action) {
   return {
-    visiblePostings: visiblePostings(state.visiblePostings, action),
+    allPostings: allPostings(state.allPostings, action),
+    isLoading: isLoading(state.isLoading, action),
+    visiblePostings: visiblePostings(state.visiblePostings, action, state.allPostings),
     pinnedPostings: pinnedPostings(state.pinnedPostings, action),
-    deletedPostings: deletedPostings(state.deletedPostings, action)
+    searchStrings: searchStrings(state.searchStrings, action),
   }
 }

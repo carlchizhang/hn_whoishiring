@@ -1,50 +1,50 @@
+import { connect } from 'react-redux';
 import React, { Component } from 'react';
 import './App.css';
-import PostingListFilter from './containers/PostingListFilter';
-import {API_URL} from './actions/actions.js';
-import { updateVisiblePostings } from './actions/actions';
-import fetch from 'cross-fetch';
+import PostingListContainer from './containers/PostingListContainer';
+import SearchBarContainer from './containers/SearchBarContainer';
+import { UpdateTypes, fetchPostingList, updateVisiblePostings } from './actions/actions';
 
 class App extends Component {
   componentDidMount() {
-    let postingPromises = [];
-    // postingPromises.push(fetch(API_URL + '/posting/17208785').then(res => res.json()));
-    // postingPromises.push(fetch(API_URL + '/posting/17228573').then(res => res.json()));
-    // postingPromises.push(fetch(API_URL + '/posting/17225827').then(res => res.json()));
-    // postingPromises.push(fetch(API_URL + '/posting/17225491').then(res => res.json()));
-    // postingPromises.push(fetch(API_URL + '/posting/17224491').then(res => res.json()));
-    // postingPromises.push(fetch(API_URL + '/posting/17225506').then(res => res.json()));
-    // postingPromises.push(fetch(API_URL + '/posting/17225132').then(res => res.json()));
-    // postingPromises.push(fetch(API_URL + '/posting/17227432').then(res => res.json()));
-    // postingPromises.push(fetch(API_URL + '/posting/17213237').then(res => res.json()));
-    // postingPromises.push(fetch(API_URL + '/posting/17206208').then(res => res.json()));
-    // postingPromises.push(fetch(API_URL + '/posting/17208092').then(res => res.json()));
-
-    fetch(API_URL + '/postings')
-    .then(res => res.json())
-    .then(res => {
-      console.log(res);
-      let fetchRequests = [];
-      res.forEach(element => {
-        fetchRequests.push(fetch(API_URL + '/posting/' + element.postingId).then(res => res.json()));
-      })
-      return Promise.all(fetchRequests);
-    })
-    .then(res => {
-      console.log(res);
-      this.props.store.dispatch(updateVisiblePostings(res));
-    })
+    this.props.loadAllPostings()
+    .then(() => this.props.updateVisiblePostings(this.props.allPostings, UpdateTypes.REPLACE))
   }
 
   render() {
     return (
       <div className='App'>
         <div className='App-header'>
+          <p className='top-logo'>
+            YCHiring
+          </p>
+          <SearchBarContainer label={'String'} placeholderText={'facebook, Seattle, startup'}/>
+          <div className='more-filters-wrapper hide'>
+            <SearchBarContainer label={'RegEx'} placeholderText={'design(er)?s?, senior.?developers?'}/>
+          </div>
         </div>
-        <PostingListFilter/>
+        <div className='App-body'>
+          <PostingListContainer/>
+        </div>
       </div>
     );
   }
 }
 
-export default App;
+const mapStateToProps = (state) => {
+  return {
+    allPostings: state.allPostings
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    loadAllPostings: () => {return dispatch(fetchPostingList())},
+    updateVisiblePostings: (postings, subtype) => {return dispatch(updateVisiblePostings(postings, subtype))}
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);

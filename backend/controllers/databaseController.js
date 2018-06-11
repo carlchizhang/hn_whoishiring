@@ -14,7 +14,7 @@ var allCities = require('all-the-cities');
 const POSTING_LIST_CACHE_PATH = './controllers/postingsList.json'
 exports.HN_API_ADDRESS = process.env.HN_API_URI || 'https://hacker-news.firebaseio.com/v0/';
 
-const REFRESH_CYCLE_MILLISECONDS = 1800000;
+const REFRESH_CYCLE_MILLISECONDS = 3600000;
 var refreshInterval = null;
 exports.startRefreshInterval = function() {
   if(!refreshInterval) {
@@ -244,7 +244,7 @@ exports.refreshPostingsFromHN = function(numMonths) {
 
 //return a list of postingIds stored in the database
 exports.getPostingList = function() {
-  return (Posting.find({}, ['postingId', 'timeUpdated']));
+  return (Posting.find({}));
 }
 
 //return a single document stored in the database

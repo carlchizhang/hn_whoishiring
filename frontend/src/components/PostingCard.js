@@ -25,7 +25,6 @@ function IconTextBox(props) {
 function ToolBox(props) {
   return (
     <div className='tool-box'>
-      <i className='tool-box-icon fas fa-trash-alt' onClick={props.delete} title={'Remove'}/>
       { props.pinned &&
         <i className='tool-box-icon fas fa-bookmark' onClick={props.togglePinned} title={'Unpin'}/>
       }
@@ -50,10 +49,6 @@ class PostingCard extends Component {
       pinned: false,
 		};
 	}
-
-  deleteCard() {
-    this.props.deleteCard();
-  }
 
   toggleExpanded() {
     let expanded = this.state.expanded;
@@ -114,7 +109,7 @@ class PostingCard extends Component {
               </div>
             </div>
           </div>
-          <div className={'posting-card-expandable-section' + (this.state.expanded ? ' collapsed' : ' expanded')}>
+          <div className={'posting-card-expandable-section' + (this.state.expanded ? ' collapsed' : ' expanded')} id='expanding-div'>
             <div className={'collapsed-section' + (this.state.expanded ? ' hide' : '')}>
               <div className='first-line-text ellipsis-text' dangerouslySetInnerHTML={{__html: firstLine}} />
               <ToolBox 
@@ -122,7 +117,6 @@ class PostingCard extends Component {
                 pinned={this.state.pinned} 
                 toggleExpanded={this.toggleExpanded.bind(this)}
                 togglePinned={this.togglePinned.bind(this)}
-                delete={this.deleteCard.bind(this)}
               />
             </div>
             <div className={'expanded-section' + (this.state.expanded ? '' : ' hide')}>
@@ -146,7 +140,6 @@ class PostingCard extends Component {
                   pinned={this.state.pinned} 
                   toggleExpanded={this.toggleExpanded.bind(this)}
                   togglePinned={this.togglePinned.bind(this)}
-                  delete={this.deleteCard.bind(this)}
                 />
               </div>
               <div className='full-text-box'>
@@ -177,37 +170,35 @@ function truncateString(string, length = 50) {
 }
 
 function timeSince(date) {
-
   var seconds = Math.floor((new Date() - date) / 1000);
-
   var interval = Math.floor(seconds / 31536000);
 
   if (interval > 1) {
     return interval + " Years";
   }
   else if (interval === 1) {
-    return "One Year"
+    return "1 Year"
   }
   interval = Math.floor(seconds / 2592000);
   if (interval > 1) {
     return interval + " Months";
   }
   else if (interval === 1) {
-    return "One Month"
+    return "1 Month"
   }
   interval = Math.floor(seconds / 86400);
   if (interval > 1) {
     return interval + " Days";
   }
   else if (interval === 1) {
-    return "One Day"
+    return "1 Day"
   }
   interval = Math.floor(seconds / 3600);
   if (interval > 1) {
     return interval + " Hours";
   }
   else if (interval === 1) {
-    return "One Hour"
+    return "1 Hour"
   }
   interval = Math.floor(seconds / 60);
   if (interval > 1) {
