@@ -1,9 +1,7 @@
 import { UpdateTypes } from '../actions/actions'
 import { 
-  findPostingInArray, 
   concatPostingArraysNoDuplicates,
   removePostingElements,
-  dateCompare,
   filterPostingsByStrings
 } from '../utilities/utilities'
 

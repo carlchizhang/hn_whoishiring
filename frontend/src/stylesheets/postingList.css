@@ -19,3 +19,18 @@
 	color: var(--card-background-color);;
 	margin-top: 25px;
 }
+
+.loading-icon.hide {
+	display: none;
+}
+
+.eol-label {
+	margin-top: 25px;
+	font-size: 16px;
+	font-weight: bold;
+	color: var(--card-lighter-background-color);
+}
+
+.eol-label.hide {
+	display: none;
+}

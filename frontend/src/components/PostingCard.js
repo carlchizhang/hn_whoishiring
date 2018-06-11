@@ -48,6 +48,9 @@ class PostingCard extends Component {
 			expanded: false,
       pinned: false,
 		};
+
+    this.toggleExpanded = this.toggleExpanded.bind(this);
+    this.togglePinned = this.togglePinned.bind(this);
 	}
 
   toggleExpanded() {
@@ -79,7 +82,7 @@ class PostingCard extends Component {
       //appearances
       return (
         <div className='posting-card'>
-          <div className='posting-card-info-section' onClick={this.toggleExpanded.bind(this)}>
+          <div className='posting-card-info-section' onClick={this.toggleExpanded}>
             <div className='info-left-sections'>
               <IconTextBox icon={'fas fa-building'} text={company} tooltip={'Company'}/>
               <IconTextBox icon={'fas fa-map-marker-alt'} text={location} tooltip={'Location'}/>
@@ -115,8 +118,8 @@ class PostingCard extends Component {
               <ToolBox 
                 expanded={this.state.expanded} 
                 pinned={this.state.pinned} 
-                toggleExpanded={this.toggleExpanded.bind(this)}
-                togglePinned={this.togglePinned.bind(this)}
+                toggleExpanded={this.toggleExpanded}
+                togglePinned={this.togglePinned}
               />
             </div>
             <div className={'expanded-section' + (this.state.expanded ? '' : ' hide')}>
@@ -138,8 +141,8 @@ class PostingCard extends Component {
                   className='expanded-tool-box' 
                   expanded={this.state.expanded} 
                   pinned={this.state.pinned} 
-                  toggleExpanded={this.toggleExpanded.bind(this)}
-                  togglePinned={this.togglePinned.bind(this)}
+                  toggleExpanded={this.toggleExpanded}
+                  togglePinned={this.togglePinned}
                 />
               </div>
               <div className='full-text-box'>

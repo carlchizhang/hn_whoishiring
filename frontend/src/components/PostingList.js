@@ -31,6 +31,7 @@ class PostingList extends Component {
   }
 
   render() {
+    let isLoading = this.props.isLoading || (this.state.visibleCount < this.props.postings.length);
     return (
       <div className='posting-list' id='scrolling-body'>
       {
@@ -47,10 +48,10 @@ class PostingList extends Component {
       }
         <div className='bottom-box'>
           <i 
-            className={'loading-icon fas fa-sync-alt fa-spin fa-2x fa-fw' 
-                        + (this.props.isLoading ? '' : ' hide')}
+            className={'loading-icon fas fa-sync-alt fa-spin fa-2x fa-fw' + (isLoading ? '' : ' hide')}
             title={'Loading... I\'m just a lowly undergrad please don\'t kill me if this takes too long'}
           />
+          <p className={'eol-label' + (isLoading ? ' hide' : '')}>- End of List -</p>
         </div>
       </div>
     );
