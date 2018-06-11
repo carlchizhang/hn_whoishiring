@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import PostingList from '../components/PostingList';
-import { pinCard } from '../actions/actions';
+import { favPosting, unfavPosting } from '../actions/actions';
 
 const mapStateToProps = (state) => {
   return {
@@ -11,7 +11,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    pinCard: (postingId) => {console.log('dispatched pin'); return dispatch(pinCard(postingId))},
+    favPosting: (posting) => dispatch(favPosting(posting)),
+    unfavPosting: (posting) => dispatch(unfavPosting(posting)),
   }
 }
 

@@ -60,8 +60,13 @@ class PostingCard extends Component {
 
   togglePinned() {
     let pinned = this.state.pinned;
+    if(!pinned) {
+      this.props.favPosting();
+    }
+    else {
+      this.props.unfavPosting();
+    }
     this.setState({pinned: !pinned});
-    this.props.pinCard();
   }
 
 	render() {

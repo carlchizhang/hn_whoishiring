@@ -10,6 +10,7 @@ import { createLogger } from 'redux-logger';
 import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import rootReducer from './reducers/reducers';
+import { UpdateTypes, fetchPostingList, updateVisiblePostings } from './actions/actions';
 
 const loggerMiddleware = createLogger();
 
@@ -20,6 +21,10 @@ const store = createStore(
     loggerMiddleware
   )
 );
+
+//hydrate with server data
+store.dispatch(fetchPostingList())
+.then(() => store.dispatch(updateVisiblePostings(store.getState().allPostings, UpdateTypes.REPLACE)))
 
 ReactDOM.render(
   <Provider store={store}>

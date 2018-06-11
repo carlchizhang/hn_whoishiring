@@ -3,25 +3,56 @@ import React, { Component } from 'react';
 import './App.css';
 import PostingListContainer from './containers/PostingListContainer';
 import SearchBarContainer from './containers/SearchBarContainer';
-import { UpdateTypes, fetchPostingList, updateVisiblePostings } from './actions/actions';
+
+function ExpandToggle(props) {
+  if(props.labelType === 'more') {
+    return (
+      <div className='expand-toggle' onClick={props.onClick}>
+        <p className='expand-filters-label'>
+          More Filters   
+          <i className='expand-filters-icon fas fa-angle-down'/>
+        </p>
+      </div>
+    );
+  }
+  else {
+    return (
+      <div className='expand-toggle' onClick={props.onClick}>
+        <p className='expand-filters-label'>
+          Less Filters   
+          <i className='expand-filters-icon fas fa-angle-up'/>
+        </p>
+      </div>
+    );    
+  }
+}
 
 class App extends Component {
-  componentDidMount() {
-    this.props.loadAllPostings()
-    .then(() => this.props.updateVisiblePostings(this.props.allPostings, UpdateTypes.REPLACE))
+  constructor(props) {
+    super(props);
+    this.state = {
+      expanded: false,
+    };
+    this.expandFilters = this.expandFilters.bind(this);
+  }
+
+  expandFilters() {
+    this.setState({expanded: !this.state.expanded});
+    console.log(this.state.expanded);
   }
 
   render() {
     return (
       <div className='App'>
-        <div className='App-header'>
+        <div className={'App-header' + (this.state.expanded ? ' expanded' : '')}>
           <p className='top-logo'>
             YCHiring
           </p>
-          <SearchBarContainer label={'String'} placeholderText={'facebook, Seattle, startup'}/>
-          <div className='more-filters-wrapper hide'>
-            <SearchBarContainer label={'RegEx'} placeholderText={'design(er)?s?, senior.?developers?'}/>
+          <SearchBarContainer label={'String'} searchType={'string'} placeholderText={'facebook, Seattle, startup'}/>
+          <div className={'more-filters-wrapper' + (this.state.expanded ? '' : ' hide')}>
+            <SearchBarContainer label={'RegEx'} searchType={'regex'} placeholderText={'design(er)?s?, senior.?developers?'}/>
           </div>
+          <ExpandToggle className='expand-toggle' labelType={this.state.expanded ? 'less' : 'more'} onClick={this.expandFilters}/>
         </div>
         <div className='App-body'>
           <PostingListContainer/>
@@ -39,8 +70,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    loadAllPostings: () => {return dispatch(fetchPostingList())},
-    updateVisiblePostings: (postings, subtype) => {return dispatch(updateVisiblePostings(postings, subtype))}
   }
 }
 

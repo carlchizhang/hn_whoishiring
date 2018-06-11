@@ -42,7 +42,8 @@ class PostingList extends Component {
           return <PostingCard 
             key={posting.postingId} 
             posting={posting}
-            pinCard={() => this.props.pinCard(posting.postingId)}
+            favPosting={() => this.props.favPosting(posting)}
+            unfavPosting={() => this.props.unfavPosting(posting)}
           />
         })
       }

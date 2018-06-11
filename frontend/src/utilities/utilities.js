@@ -11,19 +11,18 @@ export function findPostingInArray(arrPostings, postingId) {
 }
 
 export function concatPostingArraysNoDuplicates(arr1, arr2) {
-  const arr1_copy = arr1.splice();
   arr2.forEach(item => {
-    if(!arr1.findPostingInArray(item.postingId)) {
+    if(!findPostingInArray(arr1, item.postingId)) {
       arr1.push(item);
     }
   })
-  return arr1_copy;
+  return arr1;
 }
 
 export function removePostingElements(base, toBeRemoved) {
   const new_base = [];
   base.forEach(item => {
-    if(!toBeRemoved.findPostingInArray(item.postingId)) {
+    if(!findPostingInArray(toBeRemoved, item.postingId)) {
       new_base.push(base);
     }
   })

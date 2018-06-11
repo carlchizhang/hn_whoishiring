@@ -79,21 +79,28 @@ p {
 }
 
 .App-body {
-  padding-top: 150px;
+  padding-top: 165px;
 }
 
 /*-------------------------------------- header -----------------------------*/
 .App-header {
   width: 100%;
-  height: 150px;
   background-color: var(--card-background-color);
 
+  height: 165px;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 2;
   box-shadow: 0 3px 4px 0 rgba(0,0,0,0.3);
+
+  overflow: hidden;
+  transition: height 0.2s;
+}
+
+.App-header.expanded {
+  height: 240px;
 }
 
 .top-logo {
@@ -109,4 +116,26 @@ p {
 
 .more-filters-wrapper.hide {
   display: none;
+}
+
+.expand-toggle {
+  width: 100px;
+  position: absolute;
+  bottom: 6px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  cursor: pointer;
+}
+
+.expand-filters-label {
+  font-size: 14px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.expand-filters-icon {
+  margin-left: 6px;
+  vertical-align: baseline;
 }

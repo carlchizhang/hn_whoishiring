@@ -43,8 +43,6 @@ function isLoading(state = false, action) {
 
 function visiblePostings(state = [], action, allPostings) {
   switch(action.type) {
-    case 'PIN_CARD':
-      return state;
     case 'UPDATE_VISIBLE_POSTINGS':
       switch(action.subType) {
         case UpdateTypes.ADD:
@@ -65,8 +63,10 @@ function visiblePostings(state = [], action, allPostings) {
 
 function pinnedPostings(state = [], action) {
   switch (action.type) {
-    case 'PIN_CARD':
-      return state;
+    case 'FAV_POSTING':
+      return concatPostingArraysNoDuplicates(state, [action.posting]);
+    case 'UNFAV_POSTING':
+      return removePostingElements(state, [action.posting]);
     case 'UPDATE_PINNED_POSTINGS':
       switch(action.subType) {
         case UpdateTypes.ADD:

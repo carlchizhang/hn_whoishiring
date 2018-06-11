@@ -7,9 +7,14 @@ export const UpdateTypes = {
   REPLACE: 2
 }
 
-export const pinCard = (postingId) => ({
-  type: 'PIN_CARD',
-  postingId
+export const favPosting = (posting) => ({
+  type: 'FAV_POSTING',
+  posting
+})
+
+export const unfavPosting = (posting) => ({
+  type: 'UNFAV_POSTING',
+  posting
 })
 
 export const updateVisiblePostings = (postings, subType) => ({
