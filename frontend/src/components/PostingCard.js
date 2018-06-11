@@ -18,7 +18,7 @@ function IconTextBox(props) {
     );
   }
   else {
-    return null;
+    return <div className='icon-text-box'/>;
   }
 }
 
