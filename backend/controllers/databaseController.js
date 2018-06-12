@@ -147,7 +147,7 @@ exports.refreshPostingsFromHN = function(numMonths) {
     let role = null;
     let location = null;
     let salary = null;
-    let invalidCities = ['Of', 'San', 'Wa', 'Most', 'Mobile'];
+    let invalidCities = ['Of', 'San', 'Most', 'Mobile'];
     for(let i = 0; i < bracketResults.length; ++i){
       let isLocation = false;
       let isRole = false;
@@ -175,7 +175,6 @@ exports.refreshPostingsFromHN = function(numMonths) {
             //edge cases
             let regex = new RegExp('\\b(' + cityName + ')\\b', 'gi');
             if(cityName == 'New York City') {regex = /\b(New York)|(NYC)\b/gi};
-            if(cityName == 'York' && /\b(New York)\b/gi.test(bracketResults[i])) {continue;};
             //debug(regex);
             if(regex.test(bracketResults[i])) {
               isLocation = true;
@@ -270,6 +269,8 @@ function cleanupExtractionContent(string) {
   let cleanedMatch = string;
   cleanedMatch = cleanedMatch.replace(/\|/gi, '');
   cleanedMatch = cleanedMatch.replace(/ - /gi, '');
+  cleanedMatch = cleanedMatch.replace(/ \/ /gi, '');
+  cleanedMatch = cleanedMatch.replace(/ \\ /gi, '');
   cleanedMatch = cleanedMatch.replace(/(<a>).+(<\/a>)/gi, '');
   return cleanedMatch.trim();
 }

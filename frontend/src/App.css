@@ -80,6 +80,10 @@ p {
 
 .App-body {
   padding-top: 165px;
+  transition: all 0.2s;
+}
+.App-body.hide-logo {
+  margin-top: -95px;
 }
 
 /*-------------------------------------- header -----------------------------*/
@@ -96,11 +100,15 @@ p {
   box-shadow: 0 3px 4px 0 rgba(0,0,0,0.3);
 
   overflow: hidden;
-  transition: height 0.2s;
+  transition: all 0.2s ease 0s;
+}
+
+.App-header.hide-logo {
+  top: -90px;
 }
 
 .App-header.expanded {
-  height: 240px;
+  height: 300px;
 }
 
 .top-logo {
@@ -120,8 +128,9 @@ p {
 
 .expand-toggle {
   width: 100px;
+  height: 16px;
   position: absolute;
-  bottom: 6px;
+  bottom: 8px;
   left: 0;
   right: 0;
   margin-left: auto;
@@ -133,6 +142,7 @@ p {
   font-size: 14px;
   text-align: center;
   vertical-align: middle;
+  user-select: none;
 }
 
 .expand-filters-icon {

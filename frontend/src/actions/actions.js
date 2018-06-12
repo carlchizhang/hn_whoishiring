@@ -43,6 +43,20 @@ export const requestPostingListError = (error) => ({
   error
 })
 
+export const requestTagsList = () => ({
+  type: 'REQUEST_TAGS_LIST'
+})
+
+export const receiveTagsList = (availableTags) => ({
+  type: 'RECEIVE_TAGS_LIST',
+  availableTags
+})
+
+export const requestTagsListError = (error) => ({
+  type: 'REQUEST_TAGS_LIST_ERROR',
+  error
+})
+
 export function fetchPostingList() {
   return dispatch => {
     dispatch(requestPostingList())
@@ -61,4 +75,9 @@ export function fetchPostingList() {
 export const searchByStrings = (searchStrings) => ({
   type: 'SEARCH_BY_STRINGS',
   searchStrings
+})
+
+export const searchByRegexes = (searchRegexes) => ({
+  type: 'SEARCH_BY_REGEXES',
+  searchRegexes
 })

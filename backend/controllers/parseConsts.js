@@ -1,10 +1,11 @@
-exports.bracketsRegex = /(?=((\||^| - ).+?(\|| - )))/gi;
+exports.bracketsRegex = /(?=((\||^| - | \\ | \/ ).+?(\|| - | \/ | \\ )))/gi;
 exports.firstLineRegex = /(^).*?(<p>)/g;
 exports.jobTitleFilters = [/\bengineers?\b/i, /\bdevelopers?\b/i, /\bscientists?\b/i
         , /\binterns?\b/i, /\badministrators?\b/i, /\bmanagers?\b/i
         , /\bleads?\b/i, /\bdevops\b/i , /\bhi\b/i, /\bhello\b/i
         , /\b\d+?k\b/i, /\bsalary\b/i, /a href=/i];
 
+//todo: update front end if new tags are added, or setup automatic hydrating of tags
 exports.jobPositions = {
   intern: {
     tag: 'intern',

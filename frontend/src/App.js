@@ -3,28 +3,27 @@ import React, { Component } from 'react';
 import './App.css';
 import PostingListContainer from './containers/PostingListContainer';
 import SearchBarContainer from './containers/SearchBarContainer';
+import TagsBarContainer from './containers/TagsBarContainer';
 
 function ExpandToggle(props) {
+  let text, iconClass;
   if(props.labelType === 'more') {
-    return (
-      <div className='expand-toggle' onClick={props.onClick}>
-        <p className='expand-filters-label'>
-          More Filters   
-          <i className='expand-filters-icon fas fa-angle-down'/>
-        </p>
-      </div>
-    );
+    text = 'More Filters';
+    iconClass = ' fas fa-angle-down';
   }
   else {
-    return (
-      <div className='expand-toggle' onClick={props.onClick}>
-        <p className='expand-filters-label'>
-          Less Filters   
-          <i className='expand-filters-icon fas fa-angle-up'/>
-        </p>
-      </div>
-    );    
+    text = 'Less Filters';
+    iconClass = ' fas fa-angle-up';
   }
+
+  return (
+    <div className='expand-toggle' onClick={props.onClick}>
+      <p className='expand-filters-label'>
+        {text} 
+        <i className={'expand-filters-icon' + iconClass}/>
+      </p>
+    </div>
+  );
 }
 
 class App extends Component {
@@ -32,29 +31,51 @@ class App extends Component {
     super(props);
     this.state = {
       expanded: false,
+      hideLogo: false,
     };
     this.expandFilters = this.expandFilters.bind(this);
+    this.trackScrolling = this.trackScrolling.bind(this);
+    this.previousTop = 0;
+  }
+
+  componentDidMount() {
+    document.addEventListener('scroll', this.trackScrolling);
   }
 
   expandFilters() {
     this.setState({expanded: !this.state.expanded});
-    console.log(this.state.expanded);
+  }
+
+  trackScrolling() {
+    const top = document.getElementById('scrolling-app-body').getBoundingClientRect().top;
+    if (top < -100) {
+      this.setState({hideLogo: true});
+    }
+    else if(top >= -100 && this.previousTop > -250) {
+      this.setState({hideLogo: false});
+    }
+    this.previousTop = top;
   }
 
   render() {
     return (
       <div className='App'>
-        <div className={'App-header' + (this.state.expanded ? ' expanded' : '')}>
+        <div className={
+            'App-header' 
+            + (this.state.expanded ? ' expanded' : '')
+            + (this.state.hideLogo ? ' hide-logo' : '')
+        }>
           <p className='top-logo'>
             YCHiring
           </p>
           <SearchBarContainer label={'String'} searchType={'string'} placeholderText={'facebook, Seattle, startup'}/>
           <div className={'more-filters-wrapper' + (this.state.expanded ? '' : ' hide')}>
             <SearchBarContainer label={'RegEx'} searchType={'regex'} placeholderText={'design(er)?s?, senior.?developers?'}/>
+            <TagsBarContainer label={'Tags'}/>
           </div>
           <ExpandToggle className='expand-toggle' labelType={this.state.expanded ? 'less' : 'more'} onClick={this.expandFilters}/>
         </div>
-        <div className='App-body'>
+        <div className={'App-body' + (this.state.hideLogo ? ' hide-logo' : '')} id='scrolling-app-body'>
           <PostingListContainer/>
         </div>
       </div>

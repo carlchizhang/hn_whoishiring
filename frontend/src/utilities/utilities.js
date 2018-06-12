@@ -1,6 +1,3 @@
-const Entities = require('html-entities').AllHtmlEntities;
-const entities = new Entities();
-
 export function findPostingInArray(arrPostings, postingId) {
   for(let i = 0; i < arrPostings.length; ++i) {
     if(arrPostings[i].postingId === postingId) {
@@ -37,27 +34,4 @@ export function dateCompare(a, b) {
     return -1;
   }
   return 0;
-}
-
-export function filterPostingsByStrings(postings, searchStrings) {
-  if(searchStrings === undefined || searchStrings === null 
-    || searchStrings.length === 0 
-    || (searchStrings.length === 1 && searchStrings[0] === '')) {
-    return postings;
-  }
-  let filteredPostings = [];
-  postings.forEach(posting => {
-    let postingTextDecoded = entities.decode(posting.postingText);
-    for(let i = 0; i < searchStrings.length; ++i) {
-      if(searchStrings[i].length < 2) {
-        continue;
-      }
-      if(postingTextDecoded.search(searchStrings[i]) !== -1) {
-        filteredPostings.push(posting);
-        return;
-      }
-    }
-  })
-  console.log(filteredPostings);
-  return filteredPostings;
 }

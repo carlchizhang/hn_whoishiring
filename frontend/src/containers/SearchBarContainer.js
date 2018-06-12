@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import SearchBar from '../components/SearchBar';
-import { searchByStrings } from '../actions/actions';
+import { searchByStrings, searchByRegexes } from '../actions/actions';
 
 const mapStateToProps = (state, ownProps) => {
   return {
@@ -11,8 +11,13 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    search: (stringArr) => {
-      return  dispatch(searchByStrings(stringArr));
+    search: (paramsArr) => {
+      if(ownProps.searchType === 'string') {
+        return dispatch(searchByStrings(paramsArr));
+      }
+      else if(ownProps.searchType === 'regex') {
+        return dispatch(searchByRegexes(paramsArr))
+      }
     }
   }
 }
