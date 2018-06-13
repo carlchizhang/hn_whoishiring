@@ -1,7 +1,4 @@
 import React, { Component } from 'react';
-import '../App.css'
-import '../stylesheets/card.css';
-import '../stylesheets/webfonts/fontawesome-all.css';
 
 const LABEL_MAX_LENGTH = 100;
 const HN_LINK_BASE = 'https://news.ycombinator.com/item?id=';

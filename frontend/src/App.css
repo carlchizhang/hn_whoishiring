@@ -100,7 +100,7 @@ p {
   box-shadow: 0 3px 4px 0 rgba(0,0,0,0.3);
 
   overflow: hidden;
-  transition: all 0.2s ease 0s;
+  transition: all 0.4s ease 0s;
 }
 
 .App-header.hide-logo {
@@ -108,7 +108,8 @@ p {
 }
 
 .App-header.expanded {
-  height: 300px;
+  height: auto;
+  padding-bottom: 40px;
 }
 
 .top-logo {

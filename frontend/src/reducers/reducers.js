@@ -19,10 +19,8 @@ const initialState = {
   searchStrings: [],
   searchRegexes: [],
 
-  availableTags: {
-    roleTags: [],
-    remoteTags: [],
-  }
+  roleTags: [],
+  remoteTags: [],
 }
 
 function allPostings(state = [], action) {
@@ -165,8 +163,41 @@ function searchRegexes(state = [], action) {
   }
 }
 
-function availableTags(state = {roleTags: [], remoteTags: []}, action) {
+function searchTags(state = [], action) {
   switch (action.type) {
+    case 'TOGGLE_SEARCH_TAG':
+      if (!state.includes(action.tag)) {
+        let tempArr = state.slice()
+        tempArr.push(action.tag);
+        return tempArr;
+      }
+      else {
+        let newArr = [];
+        state.forEach((item) => {
+          if (item != action.tag) {
+            newArr.push(item);
+          }
+        })
+        return newArr;
+      }
+    default:
+      return state;
+  }
+}
+
+function roleTags(state = [], action) {
+  switch (action.type) {
+    case 'RECEIVE_TAGS_LIST':
+      return action.roleTags;
+    default:
+      return state;
+  }
+}
+
+function remoteTags(state = [], action) {
+  switch (action.type) {
+    case 'RECEIVE_TAGS_LIST':
+      return action.remoteTags;
     default:
       return state;
   }
@@ -180,6 +211,8 @@ export default function rootReducer(state = initialState, action) {
     pinnedPostings: pinnedPostings(state.pinnedPostings, action),
     searchStrings: searchStrings(state.searchStrings, action),
     searchRegexes: searchRegexes(state.searchRegexes, action),
-    availableTags: availableTags(state.availableTags, action),
+    searchTags: searchTags(state.searchTags, action),
+    roleTags: roleTags(state.roleTags, action),
+    remoteTags: remoteTags(state.remoteTags, action),
   }
 }

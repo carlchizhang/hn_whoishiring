@@ -1,7 +1,4 @@
 import React, { Component } from 'react';
-import '../App.css'
-import '../stylesheets/searchBar.css';
-import '../stylesheets/webfonts/fontawesome-all.css';
 
 class TagsBar extends Component {
   constructor(props) {
@@ -10,6 +7,7 @@ class TagsBar extends Component {
   }
 
   render() {
+    let searchTags = this.props.searchTags;
     return (
       <div className='search-bar-wrapper'>
         <div className='label-wrapper'>
@@ -19,6 +17,26 @@ class TagsBar extends Component {
           <i className="search-icon fas fa-search"></i>
         </div>
         <div className='tags-input'>
+        {
+          this.props.roleTags.map((tag) => {
+            let tagSelected = searchTags.includes(tag);
+            return <p 
+              key={tag} 
+              className={'filter-tag-box' + (tagSelected ? ' tag-selected' : '')}
+              onClick={() => this.props.tagClick(tag)}
+              >{tag}</p>
+          })
+        }
+        {
+          this.props.remoteTags.map((tag) => {
+            let tagSelected = searchTags.includes(tag);
+            return <p 
+              key={tag} 
+              className={'filter-tag-box' + (tagSelected ? ' tag-selected' : '')}
+              onClick={() => this.props.tagClick(tag)}
+              >{tag}</p>
+          })
+        }
         </div>
       </div>
     )

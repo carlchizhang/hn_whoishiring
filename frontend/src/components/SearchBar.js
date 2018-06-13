@@ -1,7 +1,4 @@
 import React, { Component } from 'react';
-import '../App.css'
-import '../stylesheets/searchBar.css';
-import '../stylesheets/webfonts/fontawesome-all.css';
 
 const ON_CHANGE_SEARCH_DELAY = 500;
 

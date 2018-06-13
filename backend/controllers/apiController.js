@@ -66,6 +66,10 @@ exports.startRefreshPostingsInterval = function(req, res) {
   res.send(databaseController.startRefreshInterval());
 }
 
+exports.getAvailableTags = function(req, res) {
+  res.send(databaseController.getAllTags());
+}
+
 //helpers
 const CACHE_TOO_OLD_MILLISECONDS = 900000;
 function isTooOld(timeUpdated) {

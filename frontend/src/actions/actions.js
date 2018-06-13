@@ -43,20 +43,6 @@ export const requestPostingListError = (error) => ({
   error
 })
 
-export const requestTagsList = () => ({
-  type: 'REQUEST_TAGS_LIST'
-})
-
-export const receiveTagsList = (availableTags) => ({
-  type: 'RECEIVE_TAGS_LIST',
-  availableTags
-})
-
-export const requestTagsListError = (error) => ({
-  type: 'REQUEST_TAGS_LIST_ERROR',
-  error
-})
-
 export function fetchPostingList() {
   return dispatch => {
     dispatch(requestPostingList())
@@ -71,6 +57,41 @@ export function fetchPostingList() {
       )
   }
 }
+
+export const requestTagsList = () => ({
+  type: 'REQUEST_TAGS_LIST'
+})
+
+export const receiveTagsList = (roleTags, remoteTags) => ({
+  type: 'RECEIVE_TAGS_LIST',
+  roleTags,
+  remoteTags
+})
+
+export const requestTagsListError = (error) => ({
+  type: 'REQUEST_TAGS_LIST_ERROR',
+  error
+})
+
+export function fetchTagsList() {
+  return dispatch => {
+    dispatch(requestTagsList())
+
+    return fetch(API_URL + '/tags')
+      .then(
+        response => response.json(),
+        error => dispatch(requestTagsListError(error))
+      )
+      .then(json =>
+        dispatch(receiveTagsList(json.roleTags, json.remoteTags))
+      )
+  }
+}
+
+export const toggleSearchTag = (tag) => ({
+  type: 'TOGGLE_SEARCH_TAG',
+  tag
+})
 
 export const searchByStrings = (searchStrings) => ({
   type: 'SEARCH_BY_STRINGS',

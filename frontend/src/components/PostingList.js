@@ -1,7 +1,4 @@
 import React, { Component } from 'react';
-import '../App.css'
-import '../stylesheets/postingList.css';
-import '../stylesheets/webfonts/fontawesome-all.css';
 import PostingCard from './PostingCard';
 import { dateCompare } from '../utilities/utilities';
 
@@ -10,6 +7,7 @@ class PostingList extends Component {
     super(props);
     this.state = {
       visibleCount: 50,
+      scrolledToBottom: false
     };
 
     this.trackScrolling = this.trackScrolling.bind(this);
@@ -20,18 +18,26 @@ class PostingList extends Component {
   }
 
   isBottom(element) {
-    return element.getBoundingClientRect().bottom <= window.innerHeight;
+    //console.log(element.getBoundingClientRect().bottom, window.innerHeight);
+    return element.getBoundingClientRect().bottom <= (window.innerHeight);
   }
 
   trackScrolling() {
+    if(this.state.visibleCount >= this.props.postings.length) {
+      return;
+    }
     const wrappedElement = document.getElementById('scrolling-body');
     if (this.isBottom(wrappedElement)) {
-      setTimeout(() => {this.setState({visibleCount: this.state.visibleCount+50})}, 300);
+      this.setState({scrolledToBottom: true})
+      setTimeout(() => {this.setState({
+        visibleCount: this.state.visibleCount+50, 
+        scrolledToBottom: false
+      })}, 300);
     }
   }
 
   render() {
-    let isLoading = this.props.isLoading || (this.state.visibleCount < this.props.postings.length);
+    let isLoading = this.props.isLoading || this.state.scrolledToBottom;
     return (
       <div className='posting-list' id='scrolling-body'>
       {

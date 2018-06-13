@@ -1,6 +1,10 @@
 import { connect } from 'react-redux';
 import React, { Component } from 'react';
 import './App.css';
+import './stylesheets/searchBar.css';
+import './stylesheets/postingList.css';
+import './stylesheets/card.css';
+import './stylesheets/webfonts/fontawesome-all.css';
 import PostingListContainer from './containers/PostingListContainer';
 import SearchBarContainer from './containers/SearchBarContainer';
 import TagsBarContainer from './containers/TagsBarContainer';
@@ -90,8 +94,7 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-  return {
-  }
+  return {}
 }
 
 export default connect(

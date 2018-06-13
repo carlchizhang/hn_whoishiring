@@ -19,4 +19,7 @@ router.get('/refresh', apiController.refreshPostings);
 /* GET start interval to refresh postings */
 router.get('/refresh/interval', apiController.startRefreshPostingsInterval);
 
+/* GET list of tags to filter by */
+router.get('/tags', apiController.getAvailableTags);
+
 module.exports = router;

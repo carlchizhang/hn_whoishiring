@@ -265,6 +265,21 @@ exports.findAndUpdatePosting = function(posting) {
   }
 }
 
+exports.getAllTags = function() {
+  let tags = {};
+  tags.roleTags = [];
+  for(let key in parseConsts.jobPositions) {
+    tags.roleTags.push(parseConsts.jobPositions[key].tag);
+  }
+
+  tags.remoteTags = [];
+  for(let key in parseConsts.remoteTags) {
+    tags.remoteTags.push(parseConsts.remoteTags[key].tag);
+  }
+
+  return tags;
+}
+
 function cleanupExtractionContent(string) {
   let cleanedMatch = string;
   cleanedMatch = cleanedMatch.replace(/\|/gi, '');
