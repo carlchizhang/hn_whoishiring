@@ -23,7 +23,7 @@ class PostingList extends Component {
   }
 
   trackScrolling() {
-    if(this.state.visibleCount >= this.props.postings.length) {
+    if(this.props.showFavorites || this.state.visibleCount >= this.props.postings.length) {
       return;
     }
     const wrappedElement = document.getElementById('scrolling-body');
@@ -42,14 +42,19 @@ class PostingList extends Component {
       <div className='posting-list' id='scrolling-body'>
       {
         this.props.postings.sort(dateCompare).map((posting, i) => {
-          if(i > this.state.visibleCount) {
+          if(!this.props.showFavorites && i > this.state.visibleCount) {
+            return null;
+          }
+          if(this.props.showFavorites && !this.props.favPostings.includes(posting.postingId)) {
             return null;
           }
           return <PostingCard 
             key={posting.postingId} 
             posting={posting}
+            expanded={this.props.expandedIds.includes(posting.postingId)}
             favPosting={() => this.props.favPosting(posting)}
             unfavPosting={() => this.props.unfavPosting(posting)}
+            toggleExpanded={() => this.props.toggleExpandCard(posting.postingId)}
           />
         })
       }

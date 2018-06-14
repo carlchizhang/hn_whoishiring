@@ -42,18 +42,11 @@ class PostingCard extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			expanded: false,
       pinned: false,
 		};
 
-    this.toggleExpanded = this.toggleExpanded.bind(this);
     this.togglePinned = this.togglePinned.bind(this);
 	}
-
-  toggleExpanded() {
-    let expanded = this.state.expanded;
-    this.setState({expanded: !expanded});
-  }
 
   togglePinned() {
     let pinned = this.state.pinned;
@@ -73,6 +66,10 @@ class PostingCard extends Component {
       let role = truncateString(this.props.posting.role, LABEL_MAX_LENGTH);
       let location = truncateString(this.props.posting.location, LABEL_MAX_LENGTH);
       let salary = truncateString(this.props.posting.salary, LABEL_MAX_LENGTH);
+      let infoAvailable = !(company === null && role === null && location === null && salary === null);
+      if(!infoAvailable) {
+        company = 'No information was able to be parsed...';
+      }
       let visa = this.props.posting.remoteTags.includes('visa');
       let remote = this.props.posting.remoteTags.includes('remote');
       let postingUrl = HN_LINK_BASE + this.props.posting.postingId;
@@ -84,9 +81,9 @@ class PostingCard extends Component {
       //appearances
       return (
         <div className='posting-card'>
-          <div className='posting-card-info-section' onClick={this.toggleExpanded}>
+          <div className='posting-card-info-section' onClick={this.props.toggleExpanded}>
             <div className='info-left-sections'>
-              <IconTextBox icon={'fas fa-building'} text={company} tooltip={'Company'}/>
+              <IconTextBox icon={infoAvailable ? 'fas fa-building' : 'fas fa-exclamation-triangle'} text={company} tooltip={'Company'}/>
               <IconTextBox icon={'fas fa-map-marker-alt'} text={location} tooltip={'Location'}/>
             </div>
             <div className='info-left-sections'>
@@ -114,17 +111,17 @@ class PostingCard extends Component {
               </div>
             </div>
           </div>
-          <div className={'posting-card-expandable-section' + (this.state.expanded ? ' collapsed' : ' expanded')} id='expanding-div'>
-            <div className={'collapsed-section' + (this.state.expanded ? ' hide' : '')}>
+          <div className={'posting-card-expandable-section' + (this.props.expanded ? ' collapsed' : ' expanded')} id='expanding-div'>
+            <div className={'collapsed-section' + (this.props.expanded ? ' hide' : '')}>
               <div className='first-line-text ellipsis-text' dangerouslySetInnerHTML={{__html: firstLine}} />
               <ToolBox 
-                expanded={this.state.expanded} 
+                expanded={this.props.expanded} 
                 pinned={this.state.pinned} 
-                toggleExpanded={this.toggleExpanded}
+                toggleExpanded={this.props.toggleExpanded}
                 togglePinned={this.togglePinned}
               />
             </div>
-            <div className={'expanded-section' + (this.state.expanded ? '' : ' hide')}>
+            <div className={'expanded-section' + (this.props.expanded ? '' : ' hide')}>
               <div className='tags-controls-section'>
                 <div className='field-tags tags-section'>
                   { fieldTags.map(tag => {
@@ -141,9 +138,9 @@ class PostingCard extends Component {
                 </div>
                 <ToolBox 
                   className='expanded-tool-box' 
-                  expanded={this.state.expanded} 
+                  expanded={this.props.expanded} 
                   pinned={this.state.pinned} 
-                  toggleExpanded={this.toggleExpanded}
+                  toggleExpanded={this.props.toggleExpanded}
                   togglePinned={this.togglePinned}
                 />
               </div>

@@ -22,13 +22,6 @@ export const updateVisiblePostings = (postings, subType) => ({
   postings,
   subType
 })
-
-export const updatePinnedPostings = (postings, subType) => ({
-  type: 'UPDATE_PINNED_POSTINGS',
-  postings,
-  subType
-})
-
 export const requestPostingList = () => ({
   type: 'REQUEST_POSTING_LIST'
 })
@@ -93,12 +86,47 @@ export const toggleSearchTag = (tag) => ({
   tag
 })
 
+export const updateRawSearchString = (string) => ({
+  type: 'UPDATE_RAW_SEARCH_STRING',
+  string
+})
+
 export const searchByStrings = (searchStrings) => ({
   type: 'SEARCH_BY_STRINGS',
   searchStrings
 })
 
+export const updateRawSearchRegexString = (string) => ({
+  type: 'UPDATE_RAW_SEARCH_REGEX_STRING',
+  string
+})
+
 export const searchByRegexes = (searchRegexes) => ({
   type: 'SEARCH_BY_REGEXES',
   searchRegexes
+})
+
+export const searchByTags = () => ({
+  type: 'SEARCH_BY_TAGS'
+})
+
+export const clearFilters = () => ({
+  type: 'CLEAR_FILTERS'
+})
+
+export const toggleExpandCard = (postingId) => ({
+  type: 'TOGGLE_EXPAND_CARD',
+  postingId
+})
+
+export const expandAll = () => ({
+  type: 'EXPAND_ALL'
+})
+
+export const collapseAll = () => ({
+  type: 'COLLAPSE_ALL'
+})
+
+export const toggleShowFavorites = () => ({
+  type: 'TOGGLE_SHOW_FAVORITES'
 })

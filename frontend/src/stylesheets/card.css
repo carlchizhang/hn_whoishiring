@@ -191,6 +191,10 @@
   transition: height 500ms 0ms;
 }
 
+.expanded-section > * {
+  overflow: hidden;
+}
+
 .expanded-section.hide {
   display: none;
 }

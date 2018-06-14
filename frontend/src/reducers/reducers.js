@@ -13,14 +13,19 @@ const initialState = {
   currentLoadedIndex: 0,
 
   visiblePostings: [],
-  pinnedPostings: [],
 
   searchTags: [],
   searchStrings: [],
+  rawSearchString: '',
   searchRegexes: [],
+  rawSearchRegexString: '',
 
   roleTags: [],
   remoteTags: [],
+
+  expandedIds: [],
+  pinnedPostings: [],
+  showFavorites: false,
 }
 
 function allPostings(state = [], action) {
@@ -61,18 +66,20 @@ export function filterPostings(state, searchParams, searchType) {
     || (stringParams.length === 1 && stringParams[0] === '')) {
     stringFiltered = state.allPostings;
   }
-  state.allPostings.forEach(posting => {
-    let postingTextDecoded = entities.decode(posting.postingText).toLowerCase();
-    for(let i = 0; i < stringParams.length; ++i) {
-      if(stringParams[i].length < 2) {
-        continue;
+  else {
+    state.allPostings.forEach(posting => {
+      let postingTextDecoded = entities.decode(posting.postingText).toLowerCase();
+      for(let i = 0; i < stringParams.length; ++i) {
+        if(stringParams[i].length < 2) {
+          continue;
+        }
+        if(postingTextDecoded.search(stringParams[i]) !== -1) {
+          stringFiltered.push(posting);
+          return;
+        }
       }
-      if(postingTextDecoded.search(stringParams[i]) !== -1) {
-        stringFiltered.push(posting);
-        return;
-      }
-    }
-  })
+    })
+  }
   //console.log(stringFiltered);
 
   //regex filter
@@ -83,22 +90,40 @@ export function filterPostings(state, searchParams, searchType) {
     || (regexParams.length === 1 && regexParams[0] === '')) {
     regexFiltered = stringFiltered;
   }
-  stringFiltered.forEach(posting => {
-    let postingTextDecoded = entities.decode(posting.postingText).toLowerCase();
-    for(let i = 0; i < regexParams.length; ++i) {
-      if(regexParams[i].length < 1) {
-        continue;
+  else {
+    stringFiltered.forEach(posting => {
+      let postingTextDecoded = entities.decode(posting.postingText).toLowerCase();
+      for(let i = 0; i < regexParams.length; ++i) {
+        if(regexParams[i].length < 1) {
+          continue;
+        }
+        let regex = new RegExp(regexParams[i], 'gi');
+        if(regex.test(postingTextDecoded)) {
+          regexFiltered.push(posting);
+          return;
+        }
       }
-      let regex = new RegExp(regexParams[i], 'gi');
-      if(regex.test(postingTextDecoded)) {
-        regexFiltered.push(posting);
-        return;
-      }
-    }
-  })
+    })
+  }
 
-  console.log(regexFiltered);
-  return regexFiltered;
+  let tagFiltered = [];
+  let tagParams = state.searchTags;
+  if(tagParams === undefined || tagParams === null || tagParams.length === 0) {
+    tagFiltered = regexFiltered;
+  }
+  else {
+    regexFiltered.forEach(posting => {
+      for(let i = 0; i < tagParams.length; ++i) {
+        if(posting.fieldTags.includes(tagParams[i]) || posting.remoteTags.includes(tagParams[i])) {
+          tagFiltered.push(posting);
+          return;
+        }
+      }
+    })
+  }
+
+  //console.log(tagFiltered);
+  return tagFiltered;
 }
 
 function visiblePostings(state = [], action, fullState) {
@@ -118,6 +143,8 @@ function visiblePostings(state = [], action, fullState) {
       return filterPostings(fullState, action.searchStrings, SearchTypes.STRING);
     case 'SEARCH_BY_REGEXES':
       return filterPostings(fullState, action.searchRegexes, SearchTypes.REGEX);
+    case 'SEARCH_BY_TAGS':
+      return filterPostings(fullState, [], SearchTypes.TAGS);
     default:
       return state;
   }
@@ -126,20 +153,20 @@ function visiblePostings(state = [], action, fullState) {
 function pinnedPostings(state = [], action) {
   switch (action.type) {
     case 'FAV_POSTING':
-      return concatPostingArraysNoDuplicates(state, [action.posting]);
-    case 'UNFAV_POSTING':
-      return removePostingElements(state, [action.posting]);
-    case 'UPDATE_PINNED_POSTINGS':
-      switch(action.subType) {
-        case UpdateTypes.ADD:
-          return concatPostingArraysNoDuplicates(state, action.postings);
-        case UpdateTypes.REMOVE:
-          return removePostingElements(state, action.postings);
-        case UpdateTypes.REPLACE:
-          return action.postings;
-        default:
-          return state;
+      if(state.includes(action.posting.postingId)) {
+        return state;
       }
+      let newArr = state.slice();
+      newArr.push(action.posting.postingId);
+      return newArr;
+    case 'UNFAV_POSTING':
+      let newArr2 = [];
+      state.forEach(postingId => {
+        if(postingId !== action.posting.postingId) {
+          newArr2.push(postingId);
+        }
+      })
+      return newArr2;
     default:
       return state;
   }
@@ -149,6 +176,8 @@ function searchStrings(state = [], action) {
   switch (action.type) {
     case 'SEARCH_BY_STRINGS':
       return action.searchStrings;
+    case 'CLEAR_FILTERS':
+      return [];
     default:
       return state;
   }
@@ -158,6 +187,8 @@ function searchRegexes(state = [], action) {
   switch (action.type) {
     case 'SEARCH_BY_REGEXES':
       return action.searchRegexes;
+    case 'CLEAR_FILTERS':
+      return [];
     default:
       return state;
   }
@@ -174,12 +205,14 @@ function searchTags(state = [], action) {
       else {
         let newArr = [];
         state.forEach((item) => {
-          if (item != action.tag) {
+          if (item !== action.tag) {
             newArr.push(item);
           }
         })
         return newArr;
       }
+    case 'CLEAR_FILTERS':
+      return [];
     default:
       return state;
   }
@@ -203,6 +236,67 @@ function remoteTags(state = [], action) {
   }
 }
 
+function rawSearchString(state = '', action) {
+  switch (action.type) {
+    case 'UPDATE_RAW_SEARCH_STRING':
+      return action.string;
+    case 'CLEAR_FILTERS':
+      return '';
+    default:
+      return state;
+  }
+}
+
+function rawSearchRegexString(state = '', action) {
+  switch (action.type) {
+    case 'UPDATE_RAW_SEARCH_REGEX_STRING':
+      return action.string;
+    case 'CLEAR_FILTERS':
+      return '';
+    default:
+      return state;
+  }
+}
+
+function showFavorites(state = false, action) {
+  switch (action.type) {
+    case 'TOGGLE_SHOW_FAVORITES':
+      return !state;
+    default:
+      return state;
+  }
+}
+
+function expandedIds(state = [], action, fullState) {
+  switch (action.type) {
+    case 'TOGGLE_EXPAND_CARD':
+      if(state.includes(action.postingId)) {
+        let newArr = [];
+        state.forEach(postingId => {
+          if(postingId !== action.postingId) {
+            newArr.push(postingId);
+          }
+        })
+        return newArr;
+      }
+      else {
+        let newArr = state.slice();
+        newArr.push(action.postingId);
+        return newArr;
+      }
+    case 'EXPAND_ALL':
+      let newArr = [];
+      fullState.allPostings.forEach(posting => {
+        newArr.push(posting.postingId);
+      })
+      return newArr;
+    case 'COLLAPSE_ALL':
+      return [];
+    default:
+      return state;
+  }
+}
+
 export default function rootReducer(state = initialState, action) {
   return {
     allPostings: allPostings(state.allPostings, action),
@@ -214,5 +308,9 @@ export default function rootReducer(state = initialState, action) {
     searchTags: searchTags(state.searchTags, action),
     roleTags: roleTags(state.roleTags, action),
     remoteTags: remoteTags(state.remoteTags, action),
+    rawSearchString: rawSearchString(state.rawSearchString, action),
+    rawSearchRegexString: rawSearchRegexString(state.rawSearchRegexString, action),
+    showFavorites: showFavorites(state.showFavorites, action),
+    expandedIds: expandedIds(state.expandedIds, action, state)
   }
 }

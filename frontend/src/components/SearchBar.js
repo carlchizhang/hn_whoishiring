@@ -6,7 +6,6 @@ class SearchBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: '',
       intervalId: null
     };
 
@@ -17,12 +16,13 @@ class SearchBar extends Component {
   handleChange(event) {
     clearInterval(this.state.intervalId);
     let newInterval = setInterval(this.onInterval, ON_CHANGE_SEARCH_DELAY);
-    this.setState({value: event.target.value, intervalId: newInterval});
+    this.setState({intervalId: newInterval});
+    this.props.updateSearchString(event.target.value);
   }
 
   onInterval() {
     clearInterval(this.state.intervalId);
-    let strArr = this.state.value.split(',').map(item => item.trim());
+    let strArr = this.props.valueString.split(',').map(item => item.trim());
     console.log(strArr);
     this.props.search(strArr);
   }
@@ -39,7 +39,7 @@ class SearchBar extends Component {
         <input 
           className='search-input' 
           type='search' 
-          value={this.state.value}
+          value={this.props.valueString}
           placeholder={this.props.placeholderText}
           onChange={this.handleChange}
         />

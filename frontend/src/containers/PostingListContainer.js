@@ -1,11 +1,14 @@
 import { connect } from 'react-redux';
 import PostingList from '../components/PostingList';
-import { favPosting, unfavPosting } from '../actions/actions';
+import { favPosting, unfavPosting, toggleExpandCard } from '../actions/actions';
 
 const mapStateToProps = (state) => {
   return {
     postings: state.visiblePostings,
-    isLoading: state.isLoading
+    favPostings: state.pinnedPostings,
+    isLoading: state.isLoading,
+    expandedIds: state.expandedIds,
+    showFavorites: state.showFavorites
   }
 }
 
@@ -13,6 +16,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     favPosting: (posting) => dispatch(favPosting(posting)),
     unfavPosting: (posting) => dispatch(unfavPosting(posting)),
+    toggleExpandCard: (postingId) => dispatch(toggleExpandCard(postingId))
   }
 }
 
