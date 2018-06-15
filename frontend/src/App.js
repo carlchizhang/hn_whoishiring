@@ -8,7 +8,7 @@ import './stylesheets/webfonts/fontawesome-all.css';
 import PostingListContainer from './containers/PostingListContainer';
 import SearchBarContainer from './containers/SearchBarContainer';
 import TagsBarContainer from './containers/TagsBarContainer';
-import {clearFilters, searchByTags, expandAll, collapseAll, toggleShowFavorites} from './actions/actions'
+import {clearFilters, searchByTags, expandAll, collapseAll, toggleShowFavorites, toggleLights} from './actions/actions'
 
 function ExpandToggle(props) {
   let text, iconClass;
@@ -29,6 +29,49 @@ function ExpandToggle(props) {
       </p>
     </div>
   );
+}
+
+class BottomToolBar extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      expanded: false
+    }
+
+    this.toggleExpanded = this.toggleExpanded.bind(this);
+  }
+
+  toggleExpanded() {
+    this.setState({expanded: !this.state.expanded});
+  }
+
+  render() {
+    if (this.state.expanded) {
+      return (
+        <div className='bottom-tool-bar expanded'>
+          <i className='close-about-icon fas fa-times-circle' onClick={this.toggleExpanded}></i>
+          <div className='about-links-box'>
+            <a href='https://github.com/carlchizhang/hn_whoishiring' target={'_blank'}>Source Code</a>
+            <br/><br/>
+            <p>I built YCHiring to provide an easier way to browse HackerNews | Who is hiring? posts.</p>
+            <br/>
+            <p>You can send any inquiries/suggestions to <br/>carlchizhang [AT] gmail [dot] com.</p>
+            <br/>
+            <p>Feel free to visit my website <br/><a href='http://www.carlchizhang.com/' target={'_blank'}>Here</a> to check out some of my other projects</p>
+          </div>
+        </div>
+      );
+    }
+    else {
+      return (
+        <div className='bottom-tool-bar'>
+          <p className='bottom-about-label' onClick={this.toggleExpanded}>About</p>
+          <p className='tool-bar-spacer'> | </p>
+          <i className={'bottom-lightbulb-icon' + (this.props.lights ? ' fas fa-lightbulb' : ' far fa-lightbulb')} onClick={this.props.toggleLights}></i>
+        </div>
+      );
+    }
+  }
 }
 
 class App extends Component {
@@ -96,6 +139,7 @@ class App extends Component {
         <div className={'App-body' + (this.state.hideLogo ? ' hide-logo' : '')} id='scrolling-app-body'>
           <PostingListContainer/>
         </div>
+        <BottomToolBar lights={this.props.lights} toggleLights={this.props.toggleLights}/>
       </div>
     );
   }
@@ -104,7 +148,8 @@ class App extends Component {
 const mapStateToProps = (state) => {
   return {
     allPostings: state.allPostings,
-    showFavorites: state.showFavorites
+    showFavorites: state.showFavorites,
+    lights: state.lights,
   }
 }
 
@@ -117,6 +162,7 @@ const mapDispatchToProps = (dispatch) => {
     expandAll: () => {dispatch(expandAll())},
     collapseAll: () => {dispatch(collapseAll())},
     toggleShowFavorites: () => {dispatch(toggleShowFavorites())},
+    toggleLights: () => {dispatch(toggleLights())},
   }
 }
 

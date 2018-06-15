@@ -7,14 +7,14 @@ export const UpdateTypes = {
   REPLACE: 2
 }
 
-export const favPosting = (posting) => ({
+export const favPosting = (postingId) => ({
   type: 'FAV_POSTING',
-  posting
+  postingId
 })
 
-export const unfavPosting = (posting) => ({
+export const unfavPosting = (postingId) => ({
   type: 'UNFAV_POSTING',
-  posting
+  postingId
 })
 
 export const updateVisiblePostings = (postings, subType) => ({
@@ -129,4 +129,8 @@ export const collapseAll = () => ({
 
 export const toggleShowFavorites = () => ({
   type: 'TOGGLE_SHOW_FAVORITES'
+})
+
+export const toggleLights = () => ({
+  type: 'TOGGLE_LIGHTS'
 })

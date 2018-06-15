@@ -3,8 +3,12 @@ import PostingList from '../components/PostingList';
 import { favPosting, unfavPosting, toggleExpandCard } from '../actions/actions';
 
 const mapStateToProps = (state) => {
+  let visiblePostings = state.allPostings;
+  if(!state.showFavorites) {
+    visiblePostings = state.visiblePostings;
+  }
   return {
-    postings: state.visiblePostings,
+    postings: visiblePostings,
     favPostings: state.pinnedPostings,
     isLoading: state.isLoading,
     expandedIds: state.expandedIds,
@@ -14,8 +18,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    favPosting: (posting) => dispatch(favPosting(posting)),
-    unfavPosting: (posting) => dispatch(unfavPosting(posting)),
+    favPosting: (postingId) => dispatch(favPosting(postingId)),
+    unfavPosting: (postingId) => dispatch(unfavPosting(postingId)),
     toggleExpandCard: (postingId) => dispatch(toggleExpandCard(postingId))
   }
 }

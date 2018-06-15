@@ -41,22 +41,18 @@ function ToolBox(props) {
 class PostingCard extends Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-      pinned: false,
-		};
 
     this.togglePinned = this.togglePinned.bind(this);
 	}
 
   togglePinned() {
-    let pinned = this.state.pinned;
+    let pinned = this.props.pinned;
     if(!pinned) {
       this.props.favPosting();
     }
     else {
       this.props.unfavPosting();
     }
-    this.setState({pinned: !pinned});
   }
 
 	render() {
@@ -116,7 +112,7 @@ class PostingCard extends Component {
               <div className='first-line-text ellipsis-text' dangerouslySetInnerHTML={{__html: firstLine}} />
               <ToolBox 
                 expanded={this.props.expanded} 
-                pinned={this.state.pinned} 
+                pinned={this.props.pinned} 
                 toggleExpanded={this.props.toggleExpanded}
                 togglePinned={this.togglePinned}
               />
@@ -139,7 +135,7 @@ class PostingCard extends Component {
                 <ToolBox 
                   className='expanded-tool-box' 
                   expanded={this.props.expanded} 
-                  pinned={this.state.pinned} 
+                  pinned={this.props.pinned} 
                   toggleExpanded={this.props.toggleExpanded}
                   togglePinned={this.togglePinned}
                 />

@@ -2,7 +2,8 @@
   max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+     text-overflow: ellipsis;
 }
 
 /*------------------------------- Card ---------------------------------*/
@@ -13,16 +14,25 @@
 
   margin-top: 20px;
 
-  box-shadow: 0 3px 4px 0 rgba(0,0,0,0.5);
+  -webkit-box-shadow: 0 3px 4px 0 rgba(0,0,0,0.5);
+
+          box-shadow: 0 3px 4px 0 rgba(0,0,0,0.5);
+  -webkit-transition: 0.3s;
+  -o-transition: 0.3s;
   transition: 0.3s;
 }
 
 /*------------------------------- Info Section ---------------------------------*/
 
 .posting-card-info-section {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  flex-wrap: nowrap;
-  align-items: top;
+  -ms-flex-wrap: nowrap;
+      flex-wrap: nowrap;
+  -webkit-box-align: top;
+      -ms-flex-align: top;
+          align-items: top;
 
   width: 100%;
   height: 80px;
@@ -30,7 +40,8 @@
 
   position: relative;
   z-index: 1;
-  box-shadow: 0 5px 4px -2px rgba(0,0,0,0.5);
+  -webkit-box-shadow: 0 5px 4px -2px rgba(0,0,0,0.5);
+          box-shadow: 0 5px 4px -2px rgba(0,0,0,0.5);
   //background-color: Black;
 }
 
@@ -51,9 +62,14 @@
 
 /*------------------------------- Icon Text Box ---------------------------------*/
 .icon-text-box {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
+  -ms-flex-wrap: nowrap;
+      flex-wrap: nowrap;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 
   width: 100%;
   height: 50%;
@@ -82,9 +98,15 @@
 
 /*------------------------------- Info Right Section ---------------------------------*/
 .date-link-box {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  align-items: initial;
-  justify-content: flex-end;
+  -webkit-box-align: initial;
+      -ms-flex-align: initial;
+          align-items: initial;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
   width: 100%;
   height: 20px;
 
@@ -99,8 +121,12 @@
 }
 
 .date-link-box a {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  justify-content: flex-end;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
   height: 100%;
   text-decoration: none;
 }
@@ -114,8 +140,12 @@
 }
 
 .icons-box {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  justify-content: flex-end;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
 
   width: 100%;
   height: 40px;
@@ -123,9 +153,15 @@
 }
 
 .right-icon-div {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: flex-end;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
 
   margin-left: 8px;
   margin-right: 8px;
@@ -148,9 +184,15 @@
 }
 
 .tool-box {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   //border: 1px solid black;
 
   width: 60px;
@@ -169,25 +211,34 @@
   margin-left: 8px;
 
   -webkit-transition-duration: 0.1s;
-  transition-duration: 0.1s;
+  -o-transition-duration: 0.1s;
+     transition-duration: 0.1s;
   -webkit-transition-property: transform;
+  -webkit-transition-property: -webkit-transform;
+  transition-property: -webkit-transform;
+  -o-transition-property: transform;
   transition-property: transform;
+  transition-property: transform, -webkit-transform;
 }
 
 .tool-box-icon:hover {
   -webkit-transform: scale(1.2);
-  transform: scale(1.2);
+  -ms-transform: scale(1.2);
+      transform: scale(1.2);
 }
 
 .tool-box-icon:active {
   -webkit-transform: scale(1.0);
-  transform: scale(1.0);
+  -ms-transform: scale(1.0);
+      transform: scale(1.0);
 }
 
 /*------------------------------- Expanded Section ---------------------------------*/
 .expanded-section {
   width: 100%;
   padding: 0 8px 12px 12px;
+  -webkit-transition: height 500ms 0ms;
+  -o-transition: height 500ms 0ms;
   transition: height 500ms 0ms;
 }
 
@@ -209,17 +260,28 @@
 }
 
 .tags-controls-section {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
 
   width: 100%;
 }
 
 .tags-section {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-align: baseline;
+      -ms-flex-align: baseline;
+          align-items: baseline;
 
   margin-top: 6px;
 }
@@ -258,9 +320,15 @@
 
 /*------------------------------- Collapsed Section---------------------------------*/
 .collapsed-section {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
+  -webkit-box-align: baseline;
+      -ms-flex-align: baseline;
+          align-items: baseline;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
 
   height: 45px;
   width: 100%;
@@ -277,16 +345,3 @@
   line-height: 18px;
   max-width: 90%;
 }
-
-/*
-.collapsed-break {
-  width: 80px;
-  line-height: 1px;
-  height: 1px;
-  border: 0;
-  margin: 0 0 0 16px;
-  border-bottom: 1px solid var(--highlight-color);
-  text-align: left;
-}
-*/
-

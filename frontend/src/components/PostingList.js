@@ -52,9 +52,10 @@ class PostingList extends Component {
             key={posting.postingId} 
             posting={posting}
             expanded={this.props.expandedIds.includes(posting.postingId)}
-            favPosting={() => this.props.favPosting(posting)}
-            unfavPosting={() => this.props.unfavPosting(posting)}
+            favPosting={() => this.props.favPosting(posting.postingId)}
+            unfavPosting={() => this.props.unfavPosting(posting.postingId)}
             toggleExpanded={() => this.props.toggleExpandCard(posting.postingId)}
+            pinned={this.props.favPostings.includes(posting.postingId)}
           />
         })
       }

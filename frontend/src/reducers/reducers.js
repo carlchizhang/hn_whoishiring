@@ -26,6 +26,7 @@ const initialState = {
   expandedIds: [],
   pinnedPostings: [],
   showFavorites: false,
+  lights: false,
 }
 
 function allPostings(state = [], action) {
@@ -153,16 +154,16 @@ function visiblePostings(state = [], action, fullState) {
 function pinnedPostings(state = [], action) {
   switch (action.type) {
     case 'FAV_POSTING':
-      if(state.includes(action.posting.postingId)) {
+      if(state.includes(action.postingId)) {
         return state;
       }
       let newArr = state.slice();
-      newArr.push(action.posting.postingId);
+      newArr.push(action.postingId);
       return newArr;
     case 'UNFAV_POSTING':
       let newArr2 = [];
       state.forEach(postingId => {
-        if(postingId !== action.posting.postingId) {
+        if(postingId !== action.postingId) {
           newArr2.push(postingId);
         }
       })
@@ -297,6 +298,33 @@ function expandedIds(state = [], action, fullState) {
   }
 }
 
+function lights(state = false, action) {
+  switch (action.type) {
+    case 'TOGGLE_LIGHTS': 
+      if(!state == true) {
+        document.documentElement.style.setProperty('--main-root-color', 'rgb(230, 234, 238)');
+        document.documentElement.style.setProperty('--card-background-color', 'rgb(255, 255, 255)');
+        document.documentElement.style.setProperty('--card-lighter-background-color', 'rgb(240, 241, 244)');
+        document.documentElement.style.setProperty('--main-text-color', 'rgb(37, 43, 57)');
+        document.documentElement.style.setProperty('--highlight-color', 'rgb(68, 73, 96)');
+        document.documentElement.style.setProperty('--placeholder-text-color', 'rgb(195, 206, 227)');
+        document.documentElement.style.setProperty('--search-text-color', 'rgb(37, 43, 57)');
+      }
+      else {
+        document.documentElement.style.setProperty('--main-root-color', 'rgb(132, 140, 163)');
+        document.documentElement.style.setProperty('--card-background-color', 'rgb(37, 43, 57)');
+        document.documentElement.style.setProperty('--card-lighter-background-color', 'rgb(50, 58, 78)');
+        document.documentElement.style.setProperty('--main-text-color', 'rgb(195, 206, 227)');
+        document.documentElement.style.setProperty('--highlight-color', 'rgb(141, 196, 240)');
+        document.documentElement.style.setProperty('--placeholder-text-color', 'rgb(195, 206, 227)');
+        document.documentElement.style.setProperty('--search-text-color', 'rgb(37, 43, 57)');
+      }
+      return !state;
+    default:
+      return state;
+  }
+}
+
 export default function rootReducer(state = initialState, action) {
   return {
     allPostings: allPostings(state.allPostings, action),
@@ -311,6 +339,7 @@ export default function rootReducer(state = initialState, action) {
     rawSearchString: rawSearchString(state.rawSearchString, action),
     rawSearchRegexString: rawSearchRegexString(state.rawSearchRegexString, action),
     showFavorites: showFavorites(state.showFavorites, action),
-    expandedIds: expandedIds(state.expandedIds, action, state)
+    expandedIds: expandedIds(state.expandedIds, action, state),
+    lights: lights(state.lights, action)
   }
 }
