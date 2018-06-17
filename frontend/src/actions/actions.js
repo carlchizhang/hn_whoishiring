@@ -134,3 +134,8 @@ export const toggleShowFavorites = () => ({
 export const toggleLights = () => ({
   type: 'TOGGLE_LIGHTS'
 })
+
+export const hydrateFavoritesList = (favorites) => ({
+  type: 'HYDRATE_FAVORITES_LIST',
+  favorites
+})

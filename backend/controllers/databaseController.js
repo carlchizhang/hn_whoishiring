@@ -118,6 +118,7 @@ exports.refreshPostingsFromHN = function(numMonths, limitRefreshCommentCount) {
 }
 
  exports.parseStoreRawText = function(commentId, commentTime, rawText) {
+  debug('Parsing ID:', commentId);
   return ( new Promise(function(resolve, reject) {
     let plainText = entities.decode(rawText.trim()).replace(/\r?\n|\r/g, ' ');
     //debug('Parsing comment: ' + plainText);
@@ -135,19 +136,52 @@ exports.refreshPostingsFromHN = function(numMonths, limitRefreshCommentCount) {
       firstLine = match[0].replace(/<p>/gi, '').trim();
     }
     //debug(match);
-    //debug('First Line: ' + firstLine);
+    debug('First Line: ' + firstLine);
     posting.postingFirstLine = firstLine;
 
-    //extract all data between square brackets
-    let regexExpression = new RegExp(parseConsts.bracketsRegex);
+    //decide on the separator being used in first line
+    let highestMatch = 0;
+    let regexExpression = new RegExp(parseConsts.lineBracketsRegex);
+    let cleanType = 'LINE';
+    let lineBracketsCount = (firstLine.match(/\|/gi)||[]).length;
+    if(lineBracketsCount > highestMatch) {
+      regexExpression = new RegExp(parseConsts.lineBracketsRegex);
+      cleanType = 'LINE';
+      highestMatch = lineBracketsCount;
+    }
+    let backslashCount = (firstLine.match(/ \\ /gi)||[]).length;
+    if(backslashCount > highestMatch) {
+      regexExpression = new RegExp(parseConsts.backslashRegex);
+      cleanType = 'BACKSLASH';
+      highestMatch = backslashCount;
+    }
+    let forwardslashCount = (firstLine.match(/ \/ /gi)||[]).length;
+    if(forwardslashCount > highestMatch) {
+      regexExpression = new RegExp(parseConsts.forwardslashRegex);
+      cleanType = 'FORWARDSLASH';
+      highestMatch = forwardslashCount;
+    }
+    let dashCount = (firstLine.match(/ - /gi)||[]).length;
+    if(dashCount > highestMatch) {
+      regexExpression = new RegExp(parseConsts.dashRegex);
+      cleanType = 'DASH';
+      highestMatch = dashCount;
+    }
+    //extract all data between brackets
     let bracketResults = [];
-    while ((match = regexExpression.exec(firstLine)) != null ) { 
+    debug(regexExpression);
+    while ((match = regexExpression.exec(firstLine)) !== null ) { 
       if(match.index === regexExpression.lastIndex) {
         regexExpression.lastIndex++;
       }
-      //debug('Matched: ' + cleanupExtractionContent(match[1]));
-      bracketResults.push(cleanupExtractionContent(match[1]));
+      //debug('Matched: ', match[0]);
+      //debug('Type: ', cleanType);
+      let cleanedContent = cleanupExtractionContent(match[1], cleanType);
+      if(cleanedContent !== null && cleanedContent !== undefined) {
+        bracketResults.push(cleanedContent);
+      }
     }
+    debug(bracketResults);
 
     let company = null;
     let role = null;
@@ -176,11 +210,15 @@ exports.refreshPostingsFromHN = function(numMonths, limitRefreshCommentCount) {
 
       if(location === null && !isRole) {
         for(let j = 0, count = allCities.length; j < count; ++j) {
-          if(allCities[j].population > 100000 && !invalidCities.includes(allCities[j].name)) {
+          if(allCities[j].population > 75000 && !invalidCities.includes(allCities[j].name)) {
             let cityName = allCities[j].name;
+            // if(/munich/gi.test(cityName)) {
+            //   debug(cityName);
+            // }
             //edge cases
             let regex = new RegExp('\\b(' + cityName + ')\\b', 'gi');
-            if(cityName == 'New York City') {regex = /\b(New York)|(NYC)\b/gi};
+            if(cityName == 'New York City') {regex = /\b(New York)|(NYC)\b/gi}
+            else if(cityName == 'Washington, D. C.') {regex = /\bwashington\b/gi}
             //debug(regex);
             if(regex.test(bracketResults[i])) {
               isLocation = true;
@@ -209,10 +247,13 @@ exports.refreshPostingsFromHN = function(numMonths, limitRefreshCommentCount) {
       }
     };
     posting.company = company;
+    debug('Company: ', company);
     posting.location = location;
+    debug('Location: ', location);
     posting.role = role;
+    debug('Role: ', role);
     posting.salary = salary;
-
+    debug('Salary: ', salary);
 
     //extract all field tags
     let fieldTags = [];
@@ -286,13 +327,41 @@ exports.getAllTags = function() {
   return tags;
 }
 
-function cleanupExtractionContent(string) {
+exports.parseId = function(id) {
+  let url = exports.HN_API_ADDRESS + 'item/' + id + '.json';
+  return (fetch(url).then(res => res.json())
+  .then(resJSON => {
+    if(resJSON !== null && resJSON !== undefined && !resJSON.deleted) {
+      return exports.parseStoreRawText(resJSON.id, resJSON.time, resJSON.text);
+    }
+  }))
+}
+
+function cleanupExtractionContent(string, type) {
+  //debug('cleaning ', string);
+  if(string === null || string === undefined) {
+    return null;
+  }
   let cleanedMatch = string;
-  cleanedMatch = cleanedMatch.replace(/\|/gi, '');
-  cleanedMatch = cleanedMatch.replace(/ - /gi, '');
-  cleanedMatch = cleanedMatch.replace(/ \/ /gi, '');
-  cleanedMatch = cleanedMatch.replace(/ \\ /gi, '');
-  cleanedMatch = cleanedMatch.replace(/(<a>).+(<\/a>)/gi, '');
+  switch(type) {
+    case 'LINE':
+      cleanedMatch = cleanedMatch.replace(/\|/gi, '');
+      break;
+    case 'BACKSLASH':
+      cleanedMatch = cleanedMatch.replace(/ \\ /gi, '');
+      break;
+    case 'FORWARDSLASH':
+      cleanedMatch = cleanedMatch.replace(/ \/ /gi, '');
+      break;
+    case 'DASH':
+      cleanedMatch = cleanedMatch.replace(/ - /gi, '');
+      break;
+    default:
+      break;
+  }
+
+  cleanedMatch = cleanedMatch.replace(/(<a).+(\/a>)/gi, '');
+  cleanedMatch = cleanedMatch.replace(/()/gi, '');
   return cleanedMatch.trim();
 }
 

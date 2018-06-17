@@ -10,7 +10,7 @@ import { createLogger } from 'redux-logger';
 import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import rootReducer from './reducers/reducers';
-import { UpdateTypes, fetchPostingList, updateVisiblePostings, fetchTagsList } from './actions/actions';
+import { UpdateTypes, fetchPostingList, updateVisiblePostings, fetchTagsList, hydrateFavoritesList } from './actions/actions';
 
 const loggerMiddleware = createLogger();
 
@@ -26,6 +26,15 @@ const store = createStore(
 store.dispatch(fetchPostingList())
 .then(() => store.dispatch(updateVisiblePostings(store.getState().allPostings, UpdateTypes.REPLACE)))
 store.dispatch(fetchTagsList())
+if(localStorage.hasOwnProperty('favorites')) {
+  let arrValue = localStorage.getItem('favorites');
+  try {
+    arrValue = JSON.parse(arrValue);
+    store.dispatch(hydrateFavoritesList(arrValue));
+  } catch(e) {
+    console.error('Error while reading local saved favorites list');
+  }
+}
 
 ReactDOM.render(
   <Provider store={store}>

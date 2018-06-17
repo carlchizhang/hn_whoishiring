@@ -1,4 +1,7 @@
-exports.bracketsRegex = /(?=((\||^| - | \\ | \/ ).+?(\|| - | \/ | \\ )))/gi;
+exports.lineBracketsRegex = /(?=((\||^).+?(\||$)))/gi;
+exports.backslashRegex = /(?=((^| \\ ).+?( \\ |$)))/gi;
+exports.forwardslashRegex = /(?=((^| \/ ).+?( \/ |$)))/gi;
+exports.dashRegex = /(?=((^| - ).+?( - |$)))/gi;
 exports.firstLineRegex = /(^).*?(<p>)/g;
 exports.jobTitleFilters = [/\bengineers?\b/i, /\bdevelopers?\b/i, /\bscientists?\b/i
         , /\binterns?\b/i, /\badministrators?\b/i, /\bmanagers?\b/i
@@ -21,7 +24,7 @@ exports.jobPositions = {
   },
   data: {
     tag: 'data science',
-    regexes: [/\b(data).{0,9}(analysts?|engineers?|engineering|science|scientists?)\b/i]
+    regexes: [/\b(data).{0,9}(analysts?|engineers?|engineering|science|scientists?|specialists?)\b/i]
   },
   ai: {
     tag: 'AI/ML',
@@ -85,7 +88,7 @@ exports.jobPositions = {
   },
 }
 
-exports.salary = [/\b\d+k\b/gi, /\b\$/gi, /\b£/gi, /\b€/gi, /\bequity\b/gi, /\bstock options?\b/gi];
+exports.salary = [/\b\d+k\b/gi, /\$/gi, /£/gi, /¥/gi, /€/gi, /\bequity\b/gi, /\bstock options?\b/gi];
 
 exports.remoteTags = {
   onsite: {

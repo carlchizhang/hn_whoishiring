@@ -98,7 +98,12 @@ export function filterPostings(state, searchParams, searchType) {
         if(regexParams[i].length < 1) {
           continue;
         }
-        let regex = new RegExp(regexParams[i], 'gi');
+        try {
+          var regex = new RegExp(regexParams[i], 'gi');
+        } catch(e) {
+          return;
+        }
+        console.log(regex);
         if(regex.test(postingTextDecoded)) {
           regexFiltered.push(posting);
           return;
@@ -159,6 +164,7 @@ function pinnedPostings(state = [], action) {
       }
       let newArr = state.slice();
       newArr.push(action.postingId);
+      localStorage.setItem('favorites', JSON.stringify(newArr));
       return newArr;
     case 'UNFAV_POSTING':
       let newArr2 = [];
@@ -167,7 +173,10 @@ function pinnedPostings(state = [], action) {
           newArr2.push(postingId);
         }
       })
+      localStorage.setItem('favorites', JSON.stringify(newArr2));
       return newArr2;
+    case 'HYDRATE_FAVORITES_LIST':
+      return action.favorites;
     default:
       return state;
   }
@@ -301,7 +310,7 @@ function expandedIds(state = [], action, fullState) {
 function lights(state = false, action) {
   switch (action.type) {
     case 'TOGGLE_LIGHTS': 
-      if(!state == true) {
+      if(!state === true) {
         document.documentElement.style.setProperty('--main-root-color', 'rgb(230, 234, 238)');
         document.documentElement.style.setProperty('--card-background-color', 'rgb(255, 255, 255)');
         document.documentElement.style.setProperty('--card-lighter-background-color', 'rgb(240, 241, 244)');

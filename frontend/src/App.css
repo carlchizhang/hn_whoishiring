@@ -222,6 +222,12 @@ p {
   cursor: pointer;
 }
 
+.show-favorites-label.selected {
+  cursor: pointer;
+  font-weight: bolder;
+  color: var(--highlight-color);
+}
+
 /*-------------------------------------- bottom floating footer -----------------------------*/
 .bottom-tool-bar {
   display: -webkit-box;

@@ -19,4 +19,7 @@ router.get('/refresh', apiController.refreshPostings);
 /* GET list of tags to filter by */
 router.get('/tags', apiController.getAvailableTags);
 
+/* GET list of tags to filter by */
+router.get('/parse/:id', apiController.parseId);
+
 module.exports = router;

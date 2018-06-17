@@ -127,7 +127,7 @@ class App extends Component {
               <p className='tool-bar-spacer'> | </p>
               <p className='collapse-all-label' onClick={this.props.collapseAll}>Collapse All</p>
               <p className='tool-bar-spacer'> | </p>
-              <p className='show-favorites-label' onClick={this.props.toggleShowFavorites}>{this.props.showFavorites ? 'Show All' : 'Show Favorites'}</p>
+              <p className={'show-favorites-label' + (this.props.showFavorites ? ' selected' : '')} onClick={this.props.toggleShowFavorites}>Show Favorites</p>
             </div>
             <div className='right-tool-bar'>
               <p className='clear-filters-label' onClick={this.props.clearFilters}>Clear Filters</p>

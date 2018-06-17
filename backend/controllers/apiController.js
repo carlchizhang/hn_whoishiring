@@ -54,7 +54,7 @@ exports.postingById = function(req, res, next) {
 
 //testing endpoints
 exports.refreshPostings = function(req, res) {
-  var refreshPromise = databaseController.refreshPostingsFromHN(1, false);
+  let refreshPromise = databaseController.refreshPostingsFromHN(1, false);
   refreshPromise.then(results => {
     debug(results);
     //res.render('refreshTest', {results: results});
@@ -64,6 +64,11 @@ exports.refreshPostings = function(req, res) {
 
 exports.getAvailableTags = function(req, res) {
   res.send(databaseController.getAllTags());
+}
+
+exports.parseId = function(req, res) {
+  let parsePromise = databaseController.parseId(req.params.id);
+  res.send('see console');
 }
 
 //helpers

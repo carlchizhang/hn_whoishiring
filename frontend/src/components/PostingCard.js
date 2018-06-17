@@ -58,13 +58,28 @@ class PostingCard extends Component {
 	render() {
     if(this.props.posting !== null && this.props.posting !== undefined) {
       //data
+      let availInfoCount = 4;
       let company = truncateString(this.props.posting.company, LABEL_MAX_LENGTH);
+      if (company === null) {
+        availInfoCount--;
+      }
       let role = truncateString(this.props.posting.role, LABEL_MAX_LENGTH);
+      if (role === null) {
+        availInfoCount--;
+      }
       let location = truncateString(this.props.posting.location, LABEL_MAX_LENGTH);
+      if (location === null) {
+        availInfoCount--;
+      }
       let salary = truncateString(this.props.posting.salary, LABEL_MAX_LENGTH);
-      let infoAvailable = !(company === null && role === null && location === null && salary === null);
-      if(!infoAvailable) {
+      if (salary === null) {
+        availInfoCount--;
+      }
+      if(availInfoCount <= 1) {
         company = 'No information was able to be parsed...';
+        role = null;
+        location = null;
+        salary = null;
       }
       let visa = this.props.posting.remoteTags.includes('visa');
       let remote = this.props.posting.remoteTags.includes('remote');
@@ -79,7 +94,7 @@ class PostingCard extends Component {
         <div className='posting-card'>
           <div className='posting-card-info-section' onClick={this.props.toggleExpanded}>
             <div className='info-left-sections'>
-              <IconTextBox icon={infoAvailable ? 'fas fa-building' : 'fas fa-exclamation-triangle'} text={company} tooltip={'Company'}/>
+              <IconTextBox icon={(availInfoCount > 1) ? 'fas fa-building' : 'fas fa-exclamation-triangle'} text={company} tooltip={'Company'}/>
               <IconTextBox icon={'fas fa-map-marker-alt'} text={location} tooltip={'Location'}/>
             </div>
             <div className='info-left-sections'>
