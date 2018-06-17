@@ -53,11 +53,11 @@ class BottomToolBar extends Component {
           <div className='about-links-box'>
             <a href='https://github.com/carlchizhang/hn_whoishiring' target={'_blank'}>Source Code</a>
             <br/><br/>
-            <p>I built YCHiring to provide an easier way to browse HackerNews | Who is hiring? posts.</p>
+            <p>I built YCHiring to provide an easier way to browse HackerNews Who is hiring posts.</p>
             <br/>
             <p>You can send any inquiries/suggestions to <br/>carlchizhang [AT] gmail [dot] com.</p>
             <br/>
-            <p>Feel free to visit my website <br/><a href='http://www.carlchizhang.com/' target={'_blank'}>Here</a> to check out some of my other projects</p>
+            <p>I'm also looking for a New Grad job! Feel free to check out my website <a href='http://www.carlchizhang.com/' target={'_blank'}>Here</a> for some more details.</p>
           </div>
         </div>
       );

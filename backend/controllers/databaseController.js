@@ -4,6 +4,7 @@ var fetch = require('node-fetch');
 var debug = require('debug')('backend:databaseController');
 var mongoose = require('mongoose');
 var fs = require('fs');
+var schedule = require('node-schedule');
 
 //parsing stuff
 var parseConsts = require('./parseConsts');
@@ -14,27 +15,18 @@ var allCities = require('all-the-cities');
 const POSTING_LIST_CACHE_PATH = './controllers/postingsList.json'
 exports.HN_API_ADDRESS = process.env.HN_API_URI || 'https://hacker-news.firebaseio.com/v0/';
 
-const REFRESH_CYCLE_MILLISECONDS = 3600000;
-var refreshInterval = null;
-exports.startRefreshInterval = function() {
-  if(!refreshInterval) {
-    let _this = this;
-    _this.refreshPostingsFromHN(1)
-    interval = setInterval(function() { 
-      debug('Times up! Start a refresh');
-      _this.refreshPostingsFromHN(1); 
-    }, 
-    REFRESH_CYCLE_MILLISECONDS);
-    return 'Interval started';
-  }
-  else {
-    return 'Interval already running';
-  }
+//sets up node-schedule recurring jobs to update posts
+exports.startRefreshSchedule = function() {
+  let _this = this;
+  let quickRefreshJob = schedule.scheduleJob('*/30 * * * *', () => _this.refreshPostingsFromHN(1, true));
+  let fullRefreshJob = schedule.scheduleJob('0 4 * * *', () => _this.refreshPostingsFromHN(1, false));
 }
 
 //refresh postings using hackernews api
 //TODO: speed this up, currently it takes over 60 seconds to poll the api & parse
-exports.refreshPostingsFromHN = function(numMonths) {
+const EXTRA_RANDOM_COMMENTS_FETCH_COUNT = 50;
+var lastFetchedNumComments = 0;
+exports.refreshPostingsFromHN = function(numMonths, limitRefreshCommentCount) {
   const whoishiringUserAddr = exports.HN_API_ADDRESS + 'user/whoishiring.json';
 
   return (
@@ -53,13 +45,27 @@ exports.refreshPostingsFromHN = function(numMonths) {
     let fetchRes = results;
     let whoishiringComments = extractKidsFromThreads(fetchRes, numMonths);
     //debug('allComments: ' + whoishiringComments);
-    debug('Updating comment list: ' + whoishiringComments);
 
-    commentUrls = whoishiringComments.map(id => exports.HN_API_ADDRESS + 'item/' + id + '.json');
+    let allCommentUrls = whoishiringComments.map(id => exports.HN_API_ADDRESS + 'item/' + id + '.json');
+    let commentUrls = allCommentUrls.slice();
+    if(limitRefreshCommentCount === true) {
+      let newCommentsCount = allCommentUrls.length - lastFetchedNumComments;
+      commentUrls = allCommentUrls.slice(lastFetchedNumComments);
+      for(let i = 0; i < EXTRA_RANDOM_COMMENTS_FETCH_COUNT; ++i) {
+        let randComment = allCommentUrls[Math.floor(Math.random() * allCommentUrls.length)];
+        if(!commentUrls.includes(randComment)) {
+          commentUrls.push(randComment);
+        }
+      }
+    }
+
     //debug(commentUrls);
-    debug('Total new top level comments: ' + commentUrls.length);
-    return Promise.all(commentUrls.map(url =>
-      fetch(url).then(res => res.json()).catch(error => null)
+    lastFetchedNumComments = whoishiringComments.length;
+    debug(commentUrls);
+    debug('Fetching this number of top level comments: ' + commentUrls.length);
+    return Promise.all(commentUrls.map(url => {
+      return fetch(url).then(res => res.json()).catch(error => null)
+    }
     ));
   })
   //grab raw text of these comments and parse & save them / remove them from db if deleted

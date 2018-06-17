@@ -10,6 +10,8 @@ var helmet = require('helmet');
 var indexRouter = require('./routes/index');
 var apiRouter = require('./routes/api');
 
+var databaseController = require('./controllers/databaseController');
+
 var app = express();
 
 // set up mongoose
@@ -52,5 +54,7 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+databaseController.startRefreshSchedule();
 
 module.exports = app;
