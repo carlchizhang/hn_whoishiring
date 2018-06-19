@@ -82,3 +82,5 @@ yarn-debug.log*
 yarn-error.log*
 *.psd
 frontend/src/icons/logo_full.png
+
+backend/public/

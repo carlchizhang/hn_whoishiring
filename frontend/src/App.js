@@ -55,9 +55,8 @@ class BottomToolBar extends Component {
             <br/><br/>
             <p>I built YCHiring to provide an easier way to browse HackerNews Who is hiring posts.</p>
             <br/>
-            <p>You can send any inquiries/suggestions to <br/>carlchizhang [AT] gmail [dot] com.</p>
+            <p>You can send any inquiries/suggestions to <br/>contact@ychiring.me</p>
             <br/>
-            <p>I'm also looking for a New Grad job! Feel free to check out my website <a href='http://www.carlchizhang.com/' target={'_blank'}>Here</a> for some more details.</p>
           </div>
         </div>
       );

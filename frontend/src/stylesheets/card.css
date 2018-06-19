@@ -9,7 +9,7 @@
 /*------------------------------- Card ---------------------------------*/
 .posting-card {
   width: 100%;
-  min-width: 400px;
+  min-width: 350px;
   background-color: var(--card-background-color);
 
   margin-top: 20px;
