@@ -1,5 +1,5 @@
 import { UpdateTypes } from '../actions/actions'
-import { 
+import {
   concatPostingArraysNoDuplicates,
   removePostingElements,
 } from '../utilities/utilities'
@@ -62,8 +62,8 @@ export function filterPostings(state, searchParams, searchType) {
   //string filter
   let stringFiltered = [];
   let stringParams = (searchType === SearchTypes.STRING) ? searchParams : state.searchStrings;
-  if(stringParams === undefined || stringParams === null 
-    || stringParams.length === 0 
+  if(stringParams === undefined || stringParams === null
+    || stringParams.length === 0
     || (stringParams.length === 1 && stringParams[0] === '')) {
     stringFiltered = state.allPostings;
   }
@@ -74,7 +74,7 @@ export function filterPostings(state, searchParams, searchType) {
         if(stringParams[i].length < 2) {
           continue;
         }
-        if(postingTextDecoded.search(stringParams[i]) !== -1) {
+        if(postingTextDecoded.search(stringParams[i].toLowerCase()) !== -1) {
           continue;
         }
         else {
@@ -89,8 +89,8 @@ export function filterPostings(state, searchParams, searchType) {
   //regex filter
   let regexFiltered = [];
   let regexParams = (searchType === SearchTypes.REGEX) ? searchParams : state.searchRegexes;
-  if(regexParams === undefined || regexParams === null 
-    || regexParams.length === 0 
+  if(regexParams === undefined || regexParams === null
+    || regexParams.length === 0
     || (regexParams.length === 1 && regexParams[0] === '')) {
     regexFiltered = stringFiltered;
   }
@@ -315,7 +315,7 @@ function expandedIds(state = [], action, fullState) {
 
 function lights(state = false, action) {
   switch (action.type) {
-    case 'TOGGLE_LIGHTS': 
+    case 'TOGGLE_LIGHTS':
       if(!state === true) {
         document.documentElement.style.setProperty('--main-root-color', 'rgb(230, 234, 238)');
         document.documentElement.style.setProperty('--card-background-color', 'rgb(255, 255, 255)');
