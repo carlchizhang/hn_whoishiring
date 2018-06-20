@@ -75,10 +75,13 @@ export function filterPostings(state, searchParams, searchType) {
           continue;
         }
         if(postingTextDecoded.search(stringParams[i]) !== -1) {
-          stringFiltered.push(posting);
+          continue;
+        }
+        else {
           return;
         }
       }
+      stringFiltered.push(posting);
     })
   }
   //console.log(stringFiltered);
@@ -105,10 +108,13 @@ export function filterPostings(state, searchParams, searchType) {
         }
         console.log(regex);
         if(regex.test(postingTextDecoded)) {
-          regexFiltered.push(posting);
+          continue;
+        }
+        else {
           return;
         }
       }
+      regexFiltered.push(posting);
     })
   }
 
